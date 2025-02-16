@@ -1,0 +1,39 @@
+{% extends "students/base.html" %}
+
+{% block title %}Danh sách học viên{% endblock %}
+
+{% block content %}
+<div class="student-list-container">
+    <h2>Danh sách học viên</h2>
+    {% if user.is_superuser %}
+        <a href="{% url 'student_create' %}" class="btn btn-primary">Thêm học viên mới</a>
+    {% endif %}
+    <table class="student-table">
+        <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>Số điện thoại</th>
+                <th>Địa chỉ</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.first_name }} {{ student.last_name }}</td>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.phone_number }}</td>
+                    <td>{{ student.address }}</td>
+                    <td>
+                        {% if user.is_superuser %}
+                            <a href="{% url 'student_edit' student.pk %}" class="btn btn-edit">Sửa</a>
+                            <a href="{% url 'student_delete' student.pk %}" class="btn btn-delete">Xóa</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

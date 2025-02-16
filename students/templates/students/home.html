@@ -1,0 +1,16 @@
+{% extends 'students/base.html' %}
+
+{% block title %}Trang chủ{% endblock %}
+
+{% block content %}
+<div class="jumbotron jumbotron-fluid text-center bg-primary text-white">
+    <div class="container">
+        <h1 class="display-4">Chào mừng bạn đến với Hệ thống Quản lý Học viên</h1>
+        <p class="lead">Đây là trang chủ của ứng dụng quản lý học viên.</p>
+        <hr class="my-4">
+        <p>Sử dụng các liên kết trong thanh điều hướng để quản lý học viên và khóa học.</p>
+        <a class="btn btn-light btn-lg" href="{% url 'student_list' %}" role="button">Quản lý học viên</a>
+        <a class="btn btn-light btn-lg" href="{% url 'course_list' %}" role="button">Quản lý khóa học</a>
+    </div>
+</div>
+{% endblock %}

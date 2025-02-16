@@ -1,0 +1,42 @@
+{% extends "students/base.html" %}
+
+{% block title %}Danh sách khóa học{% endblock %}
+
+{% block content %}
+<div class="course-list-container">
+    <h2>Danh sách khóa học</h2>
+    {% if user.is_superuser %}
+        <a href="{% url 'course_create' %}" class="btn btn-primary">Thêm khóa học mới</a>
+    {% endif %}
+    <table class="course-table">
+        <thead>
+            <tr>
+                <th>Tên khóa học</th>
+                <th>Mô tả</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+                <tr>
+                    <td>{{ course.name }}</td>
+                    <td>{{ course.description }}</td>
+                    <td>{{ course.start_date }}</td>
+                    <td>{{ course.end_date }}</td>
+                    <td>
+                        {% if user.is_superuser %}
+                            <a href="{% url 'course_edit' course.pk %}" class="btn btn-edit">Sửa</a>
+                            <a href="{% url 'course_delete' course.pk %}" class="btn btn-delete">Xóa</a>
+                        {% else %}
+                            <a href="{% url 'course_register' course.pk %}" class="btn btn-register">Đăng ký</a>
+                        {% endif %}
+                        <a href="{% url 'enrollment_list' course.pk %}" class="btn btn-secondary">Danh sách học viên</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

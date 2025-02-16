@@ -1,0 +1,25 @@
+{% extends 'students/base.html' %}
+
+{% block title %}{% if edit %}Sửa học viên{% else %}Thêm học viên{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{% if edit %}Sửa học viên{% else %}Thêm học viên{% endif %}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary btn-block">{% if edit %}Cập nhật{% else %}Lưu{% endif %}</button>
+                    </form>
+                    <a href="{% url 'student_list' %}" class="btn btn-secondary btn-block mt-3">Trở lại</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
