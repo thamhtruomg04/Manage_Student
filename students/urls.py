@@ -1,7 +1,8 @@
+# urls.py
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from .views import student_list, student_create, student_edit, student_delete, course_list, course_create, course_edit, course_delete, course_register, enrollment_list, register, login_view, logout_view, home, student_profile
+from .views import student_list, student_create, student_edit, student_delete, course_list, course_create, course_edit, course_delete, course_register, enrollment_list, register, login_view, logout_view, home, student_profile, attendance_list, take_attendance
 
 urlpatterns = [
     path('', student_list, name='student_list'),
@@ -15,6 +16,8 @@ urlpatterns = [
     path('courses/<int:pk>/register/', course_register, name='course_register'),
     path('courses/<int:pk>/enrollments/', enrollment_list, name='enrollment_list'),
     path('students/<int:pk>/', student_profile, name='student_profile'),
+    path('attendance/', attendance_list, name='attendance_list'),
+    path('take-attendance/', take_attendance, name='take_attendance'),
     path('register/', register, name='register'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),

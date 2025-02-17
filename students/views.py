@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Student, Course, Enrollment
-from .forms import StudentForm, CourseForm, UserRegisterForm
+from .models import Student, Course, Enrollment, Attendance
+from .forms import StudentForm, CourseForm, UserRegisterForm, AttendanceForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -174,3 +174,22 @@ def enrollment_list(request, pk):
 def student_profile(request, pk):
     student = get_object_or_404(Student, pk=pk)
     return render(request, 'students/student_profile.html', {'student': student})
+
+
+@login_required
+def attendance_list(request):
+    attendances = Attendance.objects.all()
+    return render(request, 'students/attendance_list.html', {'attendances': attendances})
+
+@login_required
+@user_passes_test(is_superuser)
+def take_attendance(request):
+    if request.method == 'POST':
+        form = AttendanceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Điểm danh thành công!')
+            return redirect('attendance_list')
+    else:
+        form = AttendanceForm()
+    return render(request, 'students/take_attendance.html', {'form': form})

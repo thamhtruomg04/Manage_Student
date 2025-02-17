@@ -1,0 +1,43 @@
+<!-- attendance_list.html -->
+{% extends "students/base.html" %}
+
+{% block title %}Danh sách điểm danh{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Danh sách điểm danh</h2>
+                </div>
+
+                <div class="card-body">
+                    <a href="{% url 'take_attendance' %}" class="btn btn-primary">Thêm điểm danh</a>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Học viên</th>
+                                <th scope="col">Khóa học</th>
+                                <th scope="col">Ngày</th>
+                                <th scope="col">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attendance in attendances %}
+                            <tr>
+                                <td>{{ attendance.student }}</td>
+                                <td>{{ attendance.course }}</td>
+                                <td>{{ attendance.date }}</td>
+                                <td>{{ attendance.get_status_display }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                <a href="{% url 'student_list' %}" class="btn btn-secondary">Quay lại</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

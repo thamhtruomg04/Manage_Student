@@ -21,6 +21,8 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'student_list' %}">Danh sách học viên</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'course_list' %}">Danh sách khóa học</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'attendance_list' %}">Danh sách điểm danh</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'take_attendance' %}">Thêm điểm danh</a></li> <!-- Thêm nút thêm điểm danh -->
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link">Xin chào, {{ user.username }}</a>
