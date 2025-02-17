@@ -11,9 +11,13 @@
                     <h2 class="mb-0">{% if edit %}Sửa học viên{% else %}Thêm học viên{% endif %}</h2>
                 </div>
                 <div class="card-body">
-                    <form method="post">
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form.as_p }}
+                        <div class="form-group">
+                            <label for="avatar">Ảnh đại diện</label>
+                            {{ form.avatar }}
+                        </div>
                         <button type="submit" class="btn btn-primary btn-block">{% if edit %}Cập nhật{% else %}Lưu{% endif %}</button>
                     </form>
                     <a href="{% url 'student_list' %}" class="btn btn-secondary btn-block mt-3">Trở lại</a>

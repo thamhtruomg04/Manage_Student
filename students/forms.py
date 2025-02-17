@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['first_name', 'last_name', 'date_of_birth', 'email', 'phone_number', 'address']
+        fields = ['first_name', 'last_name', 'date_of_birth', 'email', 'phone_number', 'address', 'avatar']
 
 class CourseForm(forms.ModelForm):
     class Meta:

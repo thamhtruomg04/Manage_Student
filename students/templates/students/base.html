@@ -20,11 +20,8 @@
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'student_list' %}">Danh sách học viên</a></li>
-                    
                     <li class="nav-item"><a class="nav-link" href="{% url 'course_list' %}">Danh sách khóa học</a></li>
-                    
                     {% if user.is_authenticated %}
-                        <!-- Logout form -->
                         <li class="nav-item text-center">
                             <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
                                 {% csrf_token %}
@@ -44,7 +41,6 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 {% block content %}
-                <!-- Nội dung sẽ được chèn ở đây -->
                 {% endblock %}
             </div>
         </div>

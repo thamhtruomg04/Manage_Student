@@ -1,0 +1,30 @@
+{% extends "students/base.html" %}
+
+{% block title %}Hồ sơ cá nhân{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Hồ sơ cá nhân của {{ student.first_name }} {{ student.last_name }}</h2>
+                </div>
+                <div class="card-body">
+                    {% if student.avatar %}
+                        <img src="{{ student.avatar.url }}" class="img-fluid rounded mb-3" alt="Avatar">
+                    {% else %}
+                        <p>Không có ảnh đại diện</p>
+                    {% endif %}
+                    <p><strong>Họ và tên:</strong> {{ student.first_name }} {{ student.last_name }}</p>
+                    <p><strong>Email:</strong> {{ student.email }}</p>
+                    <p><strong>Số điện thoại:</strong> {{ student.phone_number }}</p>
+                    <p><strong>Địa chỉ:</strong> {{ student.address }}</p>
+                    <p><strong>Ngày sinh:</strong> {{ student.date_of_birth }}</p>
+                    <a href="{% url 'student_list' %}" class="btn btn-secondary btn-block mt-3">Trở lại</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

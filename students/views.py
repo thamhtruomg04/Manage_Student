@@ -56,7 +56,7 @@ def student_list(request):
 @user_passes_test(is_superuser)
 def student_create(request):
     if request.method == 'POST':
-        form = StudentForm(request.POST)
+        form = StudentForm(request.POST, request.FILES)  # Thêm request.FILES
         if form.is_valid():
             # Tạo đối tượng User trước khi tạo đối tượng Student
             user = User.objects.create_user(
@@ -72,13 +72,12 @@ def student_create(request):
         form = StudentForm()
     return render(request, 'students/student_form.html', {'form': form})
 
-# Student edit view (only for superusers)
 @login_required
 @user_passes_test(is_superuser)
 def student_edit(request, pk):
     student = get_object_or_404(Student, pk=pk)
     if request.method == 'POST':
-        form = StudentForm(request.POST, instance=student)
+        form = StudentForm(request.POST, request.FILES, instance=student)  # Thêm request.FILES
         if form.is_valid():
             form.save()
             return redirect('student_list')
@@ -170,3 +169,8 @@ def enrollment_list(request, pk):
     course = get_object_or_404(Course, pk=pk)
     enrollments = Enrollment.objects.filter(course=course)
     return render(request, 'students/enrollment_list.html', {'course': course, 'enrollments': enrollments})
+
+@login_required
+def student_profile(request, pk):
+    student = get_object_or_404(Student, pk=pk)
+    return render(request, 'students/student_profile.html', {'student': student})

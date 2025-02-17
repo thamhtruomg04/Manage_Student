@@ -16,6 +16,7 @@
                 <th>Số điện thoại</th>
                 <th>Địa chỉ</th>
                 <th>Hành động</th>
+                <th>Chi tiết</th> <!-- Thêm cột Chi tiết -->
             </tr>
         </thead>
         <tbody>
@@ -30,6 +31,9 @@
                             <a href="{% url 'student_edit' student.pk %}" class="btn btn-edit">Sửa</a>
                             <a href="{% url 'student_delete' student.pk %}" class="btn btn-delete">Xóa</a>
                         {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'student_profile' student.pk %}" class="btn btn-info">Xem hồ sơ</a> <!-- Thêm liên kết đến trang hồ sơ -->
                     </td>
                 </tr>
             {% endfor %}
