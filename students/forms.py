@@ -8,6 +8,12 @@ class StudentForm(forms.ModelForm):
         model = Student
         fields = ['first_name', 'last_name', 'date_of_birth', 'email', 'phone_number', 'address', 'avatar']
 
+    def __init__(self, *args, **kwargs):
+        super(StudentForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+            field.widget.attrs['placeholder'] = field.label
+            
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
