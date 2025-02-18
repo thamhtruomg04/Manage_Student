@@ -18,12 +18,12 @@ class StudentForm(forms.ModelForm):
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['name', 'description', 'start_date', 'end_date']
+        fields = ['name', 'description', 'start_date', 'end_date', 'credits']
 
 class AttendanceForm(forms.ModelForm):
     class Meta:
         model = Attendance
-        fields = ['student', 'course', 'date', 'status']
+        fields = ['student', 'course', 'date', 'status', 'score']
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -37,3 +37,4 @@ class UserRegisterForm(UserCreationForm):
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = field.label
+

@@ -98,8 +98,8 @@ def student_delete(request, pk):
 # Course list view
 @login_required
 def course_list(request):
-    courses = Course.objects.all()
-    return render(request, 'students/course_list.html', {'courses': courses})
+    enrollments = Enrollment.objects.select_related('student', 'course').all()
+    return render(request, 'students/course_list.html', {'enrollments': enrollments})
 
 # Course create view (only for superusers)
 @login_required
@@ -108,11 +108,17 @@ def course_create(request):
     if request.method == 'POST':
         form = CourseForm(request.POST)
         if form.is_valid():
-            form.save()
+            course = form.save()
+            # Liên kết học viên với khóa học mới tạo
+            student_id = request.POST.get('student')
+            if student_id:
+                student = Student.objects.get(pk=student_id)
+                Enrollment.objects.create(student=student, course=course)
             return redirect('course_list')
     else:
         form = CourseForm()
-    return render(request, 'students/course_form.html', {'form': form})
+    students = Student.objects.all()  # Lấy danh sách học viên
+    return render(request, 'students/course_form.html', {'form': form, 'students': students})
 
 # Course edit view (only for superusers)
 @login_required
@@ -122,11 +128,17 @@ def course_edit(request, pk):
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
         if form.is_valid():
-            form.save()
+            course = form.save()
+            # Cập nhật liên kết học viên với khóa học
+            student_id = request.POST.get('student')
+            if student_id:
+                student = Student.objects.get(pk=student_id)
+                enrollment, created = Enrollment.objects.get_or_create(student=student, course=course)
             return redirect('course_list')
     else:
         form = CourseForm(instance=course)
-    return render(request, 'students/course_form.html', {'form': form, 'edit': True})
+    students = Student.objects.all()  # Lấy danh sách học viên
+    return render(request, 'students/course_form.html', {'form': form, 'students': students, 'edit': True})
 
 # Course delete view (only for superusers)
 @login_required
@@ -193,3 +205,25 @@ def take_attendance(request):
     else:
         form = AttendanceForm()
     return render(request, 'students/take_attendance.html', {'form': form})
+
+@login_required
+@user_passes_test(is_superuser)
+def attendance_edit(request, pk):
+    attendance = get_object_or_404(Attendance, pk=pk)
+    if request.method == 'POST':
+        form = AttendanceForm(request.POST, instance=attendance)
+        if form.is_valid():
+            form.save()
+            return redirect('attendance_list')
+    else:
+        form = AttendanceForm(instance=attendance)
+    return render(request, 'students/take_attendance.html', {'form': form, 'edit': True})
+
+@login_required
+@user_passes_test(is_superuser)
+def attendance_delete(request, pk):
+    attendance = get_object_or_404(Attendance, pk=pk)
+    if request.method == 'POST':
+        attendance.delete()
+        return redirect('attendance_list')
+    return render(request, 'students/attendance_confirm_delete.html', {'attendance': attendance})

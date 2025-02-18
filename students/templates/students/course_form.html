@@ -1,6 +1,6 @@
 {% extends 'students/base.html' %}
 
-{% block title %}Thêm khóa học{% endblock %}
+{% block title %}Thêm/Sửa khóa học{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
@@ -8,12 +8,21 @@
         <div class="col-md-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">
-                    <h2 class="mb-0">Thêm khóa học</h2>
+                    <h2 class="mb-0">{% if edit %}Sửa{% else %}Thêm{% endif %} khóa học</h2>
                 </div>
                 <div class="card-body">
                     <form method="post">
+                        <div class="form-group">
+                            <label for="student">Học viên:</label>
+                            <select id="student" name="student" class="form-control">
+                                {% for student in students %}
+                                    <option value="{{ student.id }}">{{ student.student }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         {% csrf_token %}
                         {{ form.as_p }}
+                        
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">Lưu</button>
                         </div>

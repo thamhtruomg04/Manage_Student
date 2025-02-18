@@ -21,6 +21,8 @@
                                 <th scope="col">Khóa học</th>
                                 <th scope="col">Ngày</th>
                                 <th scope="col">Trạng thái</th>
+                                <th scope="col">Điểm</th>
+                                <th scope="col">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -30,6 +32,11 @@
                                 <td>{{ attendance.course }}</td>
                                 <td>{{ attendance.date }}</td>
                                 <td>{{ attendance.get_status_display }}</td>
+                                <td>{{ attendance.score }}</td>
+                                <td>
+                                    <a href="{% url 'attendance_edit' attendance.pk %}" class="btn btn-edit">Sửa</a>
+                                    <a href="{% url 'attendance_delete' attendance.pk %}" class="btn btn-delete">Xóa</a>
+
                             </tr>
                             {% endfor %}
                         </tbody>

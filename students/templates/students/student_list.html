@@ -11,6 +11,7 @@
     <table class="student-table">
         <thead>
             <tr>
+                <th>STT</th>
                 <th>Tên</th>
                 <th>Email</th>
                 <th>Số điện thoại</th>
@@ -22,6 +23,7 @@
         <tbody>
             {% for student in students %}
                 <tr>
+                    <td>{{ forloop.counter }}</td>
                     <td>{{student.student}}</td>
                     <td>{{ student.email }}</td>
                     <td>{{ student.phone_number }}</td>

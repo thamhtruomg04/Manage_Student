@@ -14,7 +14,8 @@
                     {% if enrollments %}
                         <ul class="list-group">
                             {% for enrollment in enrollments %}
-                                <li class="list-group-item">{{ enrollment.student.user.username }} - {{ enrollment.student.user.first_name }} {{ enrollment.student.user.last_name }}</li>
+                                
+                                <li class="list-group-item">{{forloop.counter}} - {{ enrollment.student.user.username }} - {{ enrollment.student.user.student }}</li>
                             {% endfor %}
                         </ul>
                     {% else %}

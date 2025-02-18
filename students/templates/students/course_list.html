@@ -12,29 +12,33 @@
         <thead>
             <tr>
                 <th>STT</th>
+                <th>Học viên</th>
                 <th>Tên khóa học</th>
                 <th>Mô tả</th>
                 <th>Ngày bắt đầu</th>
                 <th>Ngày kết thúc</th>
+                <th>Tín chỉ</th>
                 <th>Hành động</th>
             </tr>
         </thead>
         <tbody>
-            {% for course in courses %}
+            {% for enrollment in enrollments %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ course.name }}</td>
-                    <td>{{ course.description }}</td>
-                    <td>{{ course.start_date }}</td>
-                    <td>{{ course.end_date }}</td>
+                    <td>{{ enrollment.student.student }}</td>
+                    <td>{{ enrollment.course.name }}</td>
+                    <td>{{ enrollment.course.description }}</td>
+                    <td>{{ enrollment.course.start_date }}</td>
+                    <td>{{ enrollment.course.end_date }}</td>
+                    <td>{{ enrollment.course.credits }}</td>
                     <td>
                         {% if user.is_superuser %}
-                            <a href="{% url 'course_edit' course.pk %}" class="btn btn-edit">Sửa</a>
-                            <a href="{% url 'course_delete' course.pk %}" class="btn btn-delete">Xóa</a>
+                            <a href="{% url 'course_edit' enrollment.course.pk %}" class="btn btn-edit">Sửa</a>
+                            <a href="{% url 'course_delete' enrollment.course.pk %}" class="btn btn-delete">Xóa</a>
                         {% else %}
-                            <a href="{% url 'course_register' course.pk %}" class="btn btn-register">Đăng ký</a>
+                            <a href="{% url 'course_register' enrollment.course.pk %}" class="btn btn-register">Đăng ký</a>
                         {% endif %}
-                        <a href="{% url 'enrollment_list' course.pk %}" class="btn btn-secondary">Danh sách học viên</a>
+                        <a href="{% url 'enrollment_list' enrollment.course.pk %}" class="btn btn-secondary">Danh sách học viên</a>
                     </td>
                 </tr>
             {% endfor %}

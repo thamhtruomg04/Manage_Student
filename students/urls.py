@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from .views import student_list, student_create, student_edit, student_delete, course_list, course_create, course_edit, course_delete, course_register, enrollment_list, register, login_view, logout_view, home, student_profile, attendance_list, take_attendance
+from .views import student_list, student_create, student_edit, student_delete, course_list, course_create, course_edit, course_delete, course_register, enrollment_list, register, login_view, logout_view, home, student_profile, attendance_list, take_attendance, attendance_edit, attendance_delete 
 
 urlpatterns = [
     path('', student_list, name='student_list'),
@@ -18,10 +18,13 @@ urlpatterns = [
     path('students/<int:pk>/', student_profile, name='student_profile'),
     path('attendance/', attendance_list, name='attendance_list'),
     path('take-attendance/', take_attendance, name='take_attendance'),
+    path('attendance/<int:pk>/', attendance_edit, name='attendance_edit'),
+    path('attendance/<int:pk>/delete/', attendance_delete, name='attendance_delete'),
     path('register/', register, name='register'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('home/', home, name='home'),
+ 
 ]
 
 if settings.DEBUG:
