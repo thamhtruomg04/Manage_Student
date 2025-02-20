@@ -98,8 +98,8 @@ def student_delete(request, pk):
 # Course list view
 @login_required
 def course_list(request):
-    enrollments = Enrollment.objects.select_related('student', 'course').all()
-    return render(request, 'students/course_list.html', {'enrollments': enrollments})
+    courses = Course.objects.all()
+    return render(request, 'students/course_list.html', {'courses': courses})
 
 # Course create view (only for superusers)
 @login_required
@@ -160,8 +160,7 @@ def course_register(request, pk):
     except Student.DoesNotExist:
         student = Student.objects.create(
             user=user,
-            first_name=user.first_name,
-            last_name=user.last_name,
+            student=user.username,
             email=user.email,
         )
 

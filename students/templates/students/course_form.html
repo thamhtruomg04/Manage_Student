@@ -12,14 +12,7 @@
                 </div>
                 <div class="card-body">
                     <form method="post">
-                        <div class="form-group">
-                            <label for="student">Học viên:</label>
-                            <select id="student" name="student" class="form-control">
-                                {% for student in students %}
-                                    <option value="{{ student.id }}">{{ student.student }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        
                         {% csrf_token %}
                         {{ form.as_p }}
                         
