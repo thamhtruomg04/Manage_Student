@@ -1,3 +1,39 @@
+/* student_list.html */
+.student-list-container {
+    overflow-x: auto;
+}
+
+.student-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.student-table th, .student-table td {
+    word-wrap: break-word;
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+.student-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.student-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.student-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.student-table .btn {
+    margin: 0 5px;
+}
+
+
 /* Add this CSS to your stylesheet */
 .student-table {
     width: 100%;
@@ -164,4 +200,12 @@
 .grade-table th {
     background-color: #f2f2f2;
     font-weight: bold;
+}
+
+/* forums ... */
+/* Tùy chỉnh menu thả xuống */
+.dropdown-menu.show {
+    display: block;
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
 }

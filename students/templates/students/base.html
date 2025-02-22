@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Management</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styless.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -23,7 +23,9 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'course_list' %}">Danh sách khóa học</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'attendance_list' %}">Danh sách điểm danh</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'document_list' %}">Danh sách tài liệu</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'forum_list' %}">Danh sách diễn đàn</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'reporters' %}">Báo cáo</a></li>
+                    
                     
                     {% if user.is_authenticated %}
                         <li class="nav-item">
@@ -60,5 +62,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{% static 'js/scripts.js' %}"></script>
 </body>
 </html>

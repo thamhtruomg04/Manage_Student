@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Student, Course, Enrollment, Attendance, Document
-from .forms import StudentForm, CourseForm, UserRegisterForm, AttendanceForm, DocumentForm
+from .models import Student, Course, Enrollment, Attendance, Document, Forum, Comment
+from .forms import StudentForm, CourseForm, UserRegisterForm, AttendanceForm, DocumentForm, ForumForm, CommentForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -280,3 +280,61 @@ def attendance_report(request):
 @login_required
 def reporters(request):
     return render(request, 'students/reports.html')
+
+
+@login_required
+def forum_list(request):
+    forums = Forum.objects.all()
+    return render(request, 'students/forum_list.html', {'forums': forums})
+
+@login_required
+def forum_detail(request, pk):
+    forum = get_object_or_404(Forum, pk=pk)
+    comments = forum.comments.filter(parent=None)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.forum = forum
+            comment.user = request.user
+            comment.save()
+            return redirect('forum_detail', pk=forum.pk)
+    else:
+        form = CommentForm()
+    return render(request, 'students/forum_detail.html', {'forum': forum, 'comments': comments, 'form': form})
+
+@login_required
+@user_passes_test(is_superuser)
+def forum_create(request):
+    if request.method == 'POST':
+        form = ForumForm(request.POST)
+        if form.is_valid():
+            forum = form.save(commit=False)
+            forum.created_by = request.user
+            forum.save()
+            return redirect('forum_list')
+    else:
+        form = ForumForm()
+    return render(request, 'students/forum_form.html', {'form': form})
+
+@login_required
+@user_passes_test(is_superuser)
+def forum_edit(request, pk):
+    forum = get_object_or_404(Forum, pk=pk)
+    if request.method == 'POST':
+        form = ForumForm(request.POST, instance=forum)
+        if form.is_valid():
+            form.save()
+            return redirect('forum_list')
+    else:
+        form = ForumForm(instance=forum)
+    return render(request, 'students/forum_form.html', {'form': form, 'edit': True})
+
+@login_required
+@user_passes_test(is_superuser)
+def forum_delete(request, pk):
+    forum = get_object_or_404(Forum, pk=pk)
+    if request.method == 'POST':
+        forum.delete()
+        return redirect('forum_list')
+    return render(request, 'students/forum_confirm_delete.html', {'forum': forum})

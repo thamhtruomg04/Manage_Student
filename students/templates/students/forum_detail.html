@@ -1,0 +1,51 @@
+{% extends "students/base.html" %}
+{% block title %}Chi tiết Diễn đàn{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-end mb-4">
+        <div class="dropdown">
+            <button class="btn btn-secondary" type="button" id="dropdownMenuButton" onclick="toggleDropdown()">
+                ...
+            </button>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a class="dropdown-item" href="{% url 'forum_edit' forum.pk %}">Sửa</a>
+                <a class="dropdown-item" href="{% url 'forum_delete' forum.pk %}">Xóa</a>
+            </div>
+        </div>
+    </div>
+    <h2>{{ forum.title }}</h2>
+    <p>{{ forum.description }}</p>
+    <h4>Bình luận</h4>
+    <div class="list-group mb-4">
+        {% for comment in comments %}
+        <div class="list-group-item">
+            <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
+            <div class="text-muted">{{ comment.created_at }}</div>
+            <!-- Nút phản hồi -->
+            <button class="btn btn-link" onclick="document.getElementById('replyForm-{{ comment.id }}').classList.toggle('d-none')">Phản hồi</button>
+            <!-- Form phản hồi -->
+            <form method="post" action="{% url 'forum_detail' forum.pk %}" class="d-none" id="replyForm-{{ comment.id }}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="hidden" name="parent" value="{{ comment.id }}">
+                <button type="submit" class="btn btn-success">Gửi</button>
+            </form>
+            <!-- Hiển thị phản hồi -->
+            {% for reply in comment.replies.all %}
+            <div class="list-group-item ml-4">
+                <strong>{{ reply.user.username }}</strong>: {{ reply.content }}
+                <div class="text-muted">{{ reply.created_at }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Bình luận</button>
+    </form>
+    <a href="{% url 'forum_list' %}" class="btn btn-secondary mt-4">Trở lại</a>
+</div>
+{% endblock content %}

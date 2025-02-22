@@ -15,7 +15,9 @@
                     <span>{{forloop.counter}} - {{ document.title }}</span>
                     <span>
                         <a href="{{ document.upload.url }}" class="btn btn-outline-primary btn-sm mr-2" download>Tải về</a>
+                        {% if user.is_superuser%}
                         <a href="{% url 'document_delete' document.pk %}" class="btn btn-outline-danger btn-sm">Xóa</a>
+                        {% endif %}
                     </span>
                 </li>
                 {% endfor %}

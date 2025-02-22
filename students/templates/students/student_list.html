@@ -16,8 +16,10 @@
                 <th>Email</th>
                 <th>Số điện thoại</th>
                 <th>Địa chỉ</th>
+                <th>Chi tiết</th>
+                {% if user.is_superuser%}
                 <th>Hành động</th>
-                <th>Chi tiết</th> <!-- Thêm cột Chi tiết -->
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -28,14 +30,15 @@
                     <td>{{ student.email }}</td>
                     <td>{{ student.phone_number }}</td>
                     <td>{{ student.address }}</td>
+                    
+                    <td>
+                        <a href="{% url 'student_profile' student.pk %}" class="btn btn-info">Xem hồ sơ</a> <!-- Thêm liên kết đến trang hồ sơ -->
+                    </td>
                     <td>
                         {% if user.is_superuser %}
                             <a href="{% url 'student_edit' student.pk %}" class="btn btn-edit">Sửa</a>
                             <a href="{% url 'student_delete' student.pk %}" class="btn btn-delete">Xóa</a>
                         {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'student_profile' student.pk %}" class="btn btn-info">Xem hồ sơ</a> <!-- Thêm liên kết đến trang hồ sơ -->
                     </td>
                 </tr>
             {% endfor %}

@@ -13,7 +13,9 @@
                 </div>
 
                 <div class="card-body">
+                    {% if user.is_superuser %}
                     <a href="{% url 'take_attendance' %}" class="btn btn-primary">Thêm điểm danh</a>
+                    {% endif %}
                     <table class="table">
                         <thead>
                             <tr>
@@ -22,7 +24,9 @@
                                 <th scope="col">Ngày</th>
                                 <th scope="col">Trạng thái</th>
                                 <th scope="col">Điểm</th>
+                                {% if user.is_superuser %}
                                 <th scope="col">Hành động</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -34,9 +38,10 @@
                                 <td>{{ attendance.get_status_display }}</td>
                                 <td>{{ attendance.score }}</td>
                                 <td>
+                                    {% if user.is_superuser%}
                                     <a href="{% url 'attendance_edit' attendance.pk %}" class="btn btn-edit">Sửa</a>
                                     <a href="{% url 'attendance_delete' attendance.pk %}" class="btn btn-delete">Xóa</a>
-
+                                    {% endif %}
                             </tr>
                             {% endfor %}
                         </tbody>

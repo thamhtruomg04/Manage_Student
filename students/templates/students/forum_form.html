@@ -1,0 +1,14 @@
+{% extends "students/base.html" %}
+{% block title %}Tạo Diễn đàn{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Tạo Diễn đàn mới</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Tạo</button>
+    </form>
+    <a href="{% url 'forum_list' %}" class="btn btn-secondary mt-3">Trở lại</a>
+</div>
+{% endblock content %}
