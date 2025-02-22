@@ -1,0 +1,22 @@
+{% extends "students/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white text-center">
+                    <h4>Tải lên tài liệu</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-success btn-block">Tải lên</button>
+                    </form>
+                </div>
+            </div>
+            <a href="{% url 'document_list' %}" class="btn btn-secondary">Trở lại</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

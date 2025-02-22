@@ -1,0 +1,23 @@
+{% extends "students/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Báo cáo khóa học</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tên khóa học</th>
+                <th>Số lượng học viên</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.name }}</td>
+                <td>{{ course.num_students }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'reporters' %}" class="btn btn-secondary">Quay lại</a>
+</div>
+{% endblock %}

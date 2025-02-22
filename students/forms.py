@@ -1,6 +1,6 @@
 # forms.py
 from django import forms
-from .models import Student, Course, Attendance
+from .models import Student, Course, Attendance, Document, Forum, Comment
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
@@ -38,3 +38,19 @@ class UserRegisterForm(UserCreationForm):
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['placeholder'] = field.label
 
+class DocumentForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['title', 'upload', 'course']
+
+
+
+class ForumForm(forms.ModelForm):
+    class Meta:
+        model = Forum
+        fields = ['title', 'description', 'course']
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']

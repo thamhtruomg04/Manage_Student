@@ -1,0 +1,20 @@
+{% extends "students/base.html" %}
+{% block title %}Danh sách báo cáo{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Danh sách báo cáo</h2>
+    <div class="list-group">
+        <a href="{% url 'student_report' %}" class="list-group-item list-group-item-action">
+            Báo cáo học viên
+        </a>
+        <a href="{% url 'attendance_report' %}" class="list-group-item list-group-item-action">
+            Báo cáo điểm danh
+        </a>
+        <a href="{% url 'course_report' %}" class="list-group-item list-group-item-action">
+            Báo cáo khóa học
+        </a>
+    </div>
+    <a href="{% url 'home' %}" class="btn btn-secondary mt-3">Quay lại</a>
+</div>
+{% endblock content %}

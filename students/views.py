@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Student, Course, Enrollment, Attendance
-from .forms import StudentForm, CourseForm, UserRegisterForm, AttendanceForm
+from .models import Student, Course, Enrollment, Attendance, Document
+from .forms import StudentForm, CourseForm, UserRegisterForm, AttendanceForm, DocumentForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
+from django.db.models import Count, Avg, Q
+
 
 # Check if the user is a superuser
 def is_superuser(user):
@@ -226,3 +228,55 @@ def attendance_delete(request, pk):
         attendance.delete()
         return redirect('attendance_list')
     return render(request, 'students/attendance_confirm_delete.html', {'attendance': attendance})
+
+@login_required
+def document_list(request):
+    documents = Document.objects.all()
+    return render(request, 'students/document_list.html', {'documents': documents})
+
+@login_required
+@user_passes_test(is_superuser)
+def document_create(request):
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            document = form.save(commit=False)
+            document.uploaded_by = request.user
+            document.save()
+            messages.success(request, 'Tài liệu đã được tải lên thành công!')
+            return redirect('document_list')
+    else:
+        form = DocumentForm()
+    return render(request, 'students/document_form.html', {'form': form})
+
+@login_required
+def document_delete(request, pk):
+    document = get_object_or_404(Document, pk=pk)
+    if request.method == 'POST':
+        document.delete()
+        return redirect('document_list')
+    return render(request, 'students/document_confirm_delete.html', {'document': document})
+
+
+
+@login_required
+def student_report(request):
+    students = Student.objects.all()
+    return render(request, 'students/student_report.html', {'students': students})
+
+@login_required
+def course_report(request):
+    courses = Course.objects.annotate(num_students=Count('enrollment'))
+    return render(request, 'students/course_report.html', {'courses': courses})
+
+@login_required
+def attendance_report(request):
+    attendance_stats = Attendance.objects.values('course__name').annotate(
+        num_attended=Count('status', filter=Q(status=True)),
+        num_missed=Count('status', filter=Q(status=False))
+    )
+    return render(request, 'students/attendance_report.html', {'attendance_stats': attendance_stats})
+
+@login_required
+def reporters(request):
+    return render(request, 'students/reports.html')

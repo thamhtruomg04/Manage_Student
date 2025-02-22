@@ -1,0 +1,26 @@
+{% extends "students/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h2 class="mb-3">Danh sách tài liệu</h2>
+            <a href="{% url 'document_create' %}" class="btn btn-primary">Tải lên tài liệu mới</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <ul class="list-group">
+                {% for document in documents %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{forloop.counter}} - {{ document.title }}</span>
+                    <span>
+                        <a href="{{ document.upload.url }}" class="btn btn-outline-primary btn-sm mr-2" download>Tải về</a>
+                        <a href="{% url 'document_delete' document.pk %}" class="btn btn-outline-danger btn-sm">Xóa</a>
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

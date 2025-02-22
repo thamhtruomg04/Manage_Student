@@ -1,0 +1,25 @@
+{% extends "students/base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Báo cáo điểm danh</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Khóa học</th>
+                <th>Số buổi đã điểm danh</th>
+                <th>Số buổi vắng</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in attendance_stats %}
+            <tr>
+                <td>{{ stat.course__name }}</td>
+                <td>{{ stat.num_attended }}</td>
+                <td>{{ stat.num_missed }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'reporters' %}" class="btn btn-secondary">Quay lại</a>
+</div>
+{% endblock %}
