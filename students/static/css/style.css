@@ -202,10 +202,36 @@
     font-weight: bold;
 }
 
-/* forums ... */
-/* Tùy chỉnh menu thả xuống */
-.dropdown-menu.show {
-    display: block;
-    margin-top: 0.5rem;
-    border-radius: 0.5rem;
-}
+
+    .user-message {
+        text-align: left;
+        background-color: #e1ffc7;
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        display: inline-block;
+        max-width: 80%;
+        clear: both;
+    }
+
+    .bot-message {
+        text-align: right;
+        background-color: #d3e0ff;
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        display: inline-block;
+        max-width: 80%;
+        float: right;
+        clear: both;
+    }
+
+    #chatbox::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    #chatbox {
+        overflow-y: auto;
+    }

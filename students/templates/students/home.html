@@ -1,16 +1,69 @@
 {% extends 'students/base.html' %}
-
+{% load static %}
 {% block title %}Trang chủ{% endblock %}
 
 {% block content %}
 <div class="jumbotron jumbotron-fluid text-center bg-primary text-white">
     <div class="container">
         <h1 class="display-4">Chào mừng bạn đến với Hệ thống Quản lý Học viên</h1>
-        <p class="lead">Đây là trang chủ của ứng dụng quản lý học viên.</p>
+        <p class="lead">Trang chủ của ứng dụng quản lý học viên.</p>
         <hr class="my-4">
         <p>Sử dụng các liên kết trong thanh điều hướng để quản lý học viên và khóa học.</p>
-        <a class="btn btn-light btn-lg" href="{% url 'student_list' %}" role="button">Quản lý học viên</a>
-        <a class="btn btn-light btn-lg" href="{% url 'course_list' %}" role="button">Quản lý khóa học</a>
+        <a class="btn btn-light btn-lg m-2" href="{% url 'student_list' %}" role="button">Quản lý học viên</a>
+        <a class="btn btn-light btn-lg m-2" href="{% url 'course_list' %}" role="button">Quản lý khóa học</a>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Danh sách học viên</h5>
+                    <p class="card-text">Xem, thêm mới, chỉnh sửa và xóa học viên.</p>
+                    <a href="{% url 'student_list' %}" class="btn btn-primary">Quản lý học viên</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Danh sách khóa học</h5>
+                    <p class="card-text">Xem, thêm mới, chỉnh sửa và xóa khóa học.</p>
+                    <a href="{% url 'course_list' %}" class="btn btn-primary">Quản lý khóa học</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Báo cáo và Thống kê</h5>
+                    <p class="card-text">Xem các báo cáo và thống kê về học viên và khóa học.</p>
+                    <a href="{% url 'reporters' %}" class="btn btn-primary">Xem báo cáo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Khung chat cho Chatbot -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Chatbot</h5>
+                    <div id="chatbox" style="height: 300px; border: 1px solid #ccc; overflow-y: scroll; padding: 10px;"></div>
+                    <form method="POST" id="chatbot-form">
+                        {% csrf_token %}
+                        <input type="text" id="userMessage" class="form-control mt-2" placeholder="Nhập tin nhắn...">
+                        <button type="button" class="btn btn-primary mt-2" id="sendButton">Gửi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
+
+

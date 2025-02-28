@@ -7,6 +7,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Count, Avg, Q
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 # Check if the user is a superuser
 def is_superuser(user):
@@ -338,3 +341,9 @@ def forum_delete(request, pk):
         forum.delete()
         return redirect('forum_list')
     return render(request, 'students/forum_confirm_delete.html', {'forum': forum})
+
+
+# Chatbot
+# students/views.py
+
+

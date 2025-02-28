@@ -1,8 +1,8 @@
-# forms.py
 from django import forms
 from .models import Student, Course, Attendance, Document, Forum, Comment
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
+
 
 class StudentForm(forms.ModelForm):
     class Meta:
@@ -42,8 +42,6 @@ class DocumentForm(forms.ModelForm):
     class Meta:
         model = Document
         fields = ['title', 'upload', 'course']
-
-
 
 class ForumForm(forms.ModelForm):
     class Meta:
