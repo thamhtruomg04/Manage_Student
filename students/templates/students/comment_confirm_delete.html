@@ -1,0 +1,28 @@
+{% extends "students/base.html" %}
+
+{% block title %}Xác nhận xóa bình luận{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h2 class="mb-0">Xác nhận xóa bình luận</h2>
+                </div>
+                <div class="card-body">
+                    <p>Bạn có chắc chắn muốn xóa bình luận này không?</p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                        <a href="{% url 'forum_detail' comment.forum.pk %}" class="btn btn-secondary">Hủy</a>
+                        </div>
+                    </form>
+                    <a href="{% url 'forum_detail' comment.forum.pk %}" class="btn btn-secondary btn-block mt-3">Trở lại</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

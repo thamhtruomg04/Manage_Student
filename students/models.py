@@ -9,7 +9,7 @@ class Student(models.Model):
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     address = models.TextField(null=True, blank=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    class_name = models.CharField(max_length=50, null=True, blank=True)  # Thêm trường lớp học
+    class_name = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return self.student
@@ -19,9 +19,9 @@ class Course(models.Model):
     description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField()
-    credits = models.IntegerField()  # Số tín chỉ
-    instructor_name = models.CharField(max_length=100)  # Tên giảng viên
-    fee = models.DecimalField(max_digits=10, decimal_places=2)  # Học phí
+    credits = models.IntegerField()
+    instructor_name = models.CharField(max_length=100)
+    fee = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self):
         return self.name
@@ -40,7 +40,7 @@ class Attendance(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     date = models.DateField()
     status = models.CharField(max_length=10, choices=[('Present', 'Có mặt'), ('Absent', 'Vắng mặt')], null=True, blank=True)
-    score = models.FloatField(null=True, blank=True)  # Điểm số
+    score = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.student} - {self.course} - {self.date} - {self.status or 'No status'} - {self.score or 'No score'}"
@@ -58,6 +58,8 @@ class Document(models.Model):
 class Forum(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
+    image = models.ImageField(upload_to='forum_images/', null=True, blank=True)  # Thêm ảnh
+    file = models.FileField(upload_to='forum_files/', null=True, blank=True)  # Thêm file
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -69,6 +71,8 @@ class Comment(models.Model):
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
+    image = models.ImageField(upload_to='comment_images/', null=True, blank=True)  # Thêm ảnh
+    file = models.FileField(upload_to='comment_files/', null=True, blank=True)  # Thêm file
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
     created_at = models.DateTimeField(auto_now_add=True)
 

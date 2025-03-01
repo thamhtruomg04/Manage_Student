@@ -291,6 +291,11 @@ def reporters(request):
     return render(request, 'students/reports.html')
 
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import Forum, Comment
+from .forms import ForumForm, CommentForm
+
 @login_required
 def forum_list(request):
     forums = Forum.objects.all()
@@ -301,7 +306,7 @@ def forum_detail(request, pk):
     forum = get_object_or_404(Forum, pk=pk)
     comments = forum.comments.filter(parent=None)
     if request.method == 'POST':
-        form = CommentForm(request.POST)
+        form = CommentForm(request.POST, request.FILES)  # Thêm request.FILES để xử lý file upload
         if form.is_valid():
             comment = form.save(commit=False)
             comment.forum = forum
@@ -316,7 +321,7 @@ def forum_detail(request, pk):
 @user_passes_test(is_superuser)
 def forum_create(request):
     if request.method == 'POST':
-        form = ForumForm(request.POST)
+        form = ForumForm(request.POST, request.FILES)  # Thêm request.FILES để xử lý file upload
         if form.is_valid():
             forum = form.save(commit=False)
             forum.created_by = request.user
@@ -327,11 +332,12 @@ def forum_create(request):
     return render(request, 'students/forum_form.html', {'form': form})
 
 @login_required
-@user_passes_test(is_superuser)
 def forum_edit(request, pk):
     forum = get_object_or_404(Forum, pk=pk)
+    if request.user != forum.created_by:
+        return redirect('forum_list')
     if request.method == 'POST':
-        form = ForumForm(request.POST, instance=forum)
+        form = ForumForm(request.POST, request.FILES, instance=forum)  # Thêm request.FILES để xử lý file upload
         if form.is_valid():
             form.save()
             return redirect('forum_list')
@@ -340,15 +346,35 @@ def forum_edit(request, pk):
     return render(request, 'students/forum_form.html', {'form': form, 'edit': True})
 
 @login_required
-@user_passes_test(is_superuser)
 def forum_delete(request, pk):
     forum = get_object_or_404(Forum, pk=pk)
+    if request.user != forum.created_by:
+        return redirect('forum_list')
     if request.method == 'POST':
         forum.delete()
         return redirect('forum_list')
     return render(request, 'students/forum_confirm_delete.html', {'forum': forum})
 
+@login_required
+def comment_edit(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user != comment.user:
+        return redirect('forum_detail', pk=comment.forum.pk)
+    if request.method == 'POST':
+        form = CommentForm(request.POST, request.FILES, instance=comment)  # Thêm request.FILES để xử lý file upload
+        if form.is_valid():
+            form.save()
+            return redirect('forum_detail', pk=comment.forum.pk)
+    else:
+        form = CommentForm(instance=comment)
+    return render(request, 'students/comment_form.html', {'form': form})
 
-
-
-
+@login_required
+def comment_delete(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.user != comment.user:
+        return redirect('forum_detail', pk=comment.forum.pk)
+    if request.method == 'POST':
+        comment.delete()
+        return redirect('forum_detail', pk=comment.forum.pk)
+    return render(request, 'students/comment_confirm_delete.html', {'comment': comment})

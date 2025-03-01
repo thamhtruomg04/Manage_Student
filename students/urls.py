@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
-from .views import student_list, student_create, student_edit, student_delete, course_list, course_create, course_edit, course_delete, course_register, enrollment_list, register, login_view, logout_view, home, student_profile, attendance_list, take_attendance, attendance_edit, attendance_delete , document_list, document_create, document_delete, student_report, course_report, attendance_report, reporters, forum_list, forum_detail, forum_create, forum_edit, forum_delete
+from .views import student_list, student_create, student_edit, student_delete, course_list, course_create, course_edit, course_delete, course_register, enrollment_list, register, login_view, logout_view, home, student_profile, attendance_list, take_attendance, attendance_edit, attendance_delete , document_list, document_create, document_delete, student_report, course_report, attendance_report, reporters, forum_list, forum_detail, forum_create, forum_edit, forum_delete, comment_edit, comment_delete
 
 urlpatterns = [
     path('', student_list, name='student_list'),
@@ -36,6 +36,8 @@ urlpatterns = [
     path('forums/create/', forum_create, name='forum_create'),
     path('forums/<int:pk>/edit/', forum_edit, name='forum_edit'),
     path('forums/<int:pk>/delete/', forum_delete, name='forum_delete'),
+    path('comments/<int:pk>edit/', comment_edit, name='comment_edit'),
+    path('comments/<int:pk>/delete/', comment_delete, name='comment_delete'),
 ]
 
 if settings.DEBUG:

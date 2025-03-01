@@ -4,6 +4,7 @@
 {% block content %}
 <div class="container mt-5">
     <div class="d-flex justify-content-end mb-4">
+        {% if request.user == forum.created_by %}
         <div class="dropdown">
             <button class="btn btn-secondary" type="button" id="dropdownMenuButton" onclick="toggleDropdown()">
                 ...
@@ -13,15 +14,34 @@
                 <a class="dropdown-item" href="{% url 'forum_delete' forum.pk %}">Xóa</a>
             </div>
         </div>
+        {% endif %}
     </div>
     <h2>{{ forum.title }}</h2>
     <p>{{ forum.description }}</p>
+    {% if forum.image %}
+        <img src="{{ forum.image.url }}" alt="Forum Image" class="img-fluid">
+    {% endif %}
+    {% if forum.file %}
+        <a href="{{ forum.file.url }}" class="btn btn-primary mt-3">Download File</a>
+    {% endif %}
     <h4>Bình luận</h4>
     <div class="list-group mb-4">
         {% for comment in comments %}
         <div class="list-group-item">
             <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
+            {% if comment.image %}
+                <img src="{{ comment.image.url }}" alt="Comment Image" class="img-fluid mt-2">
+            {% endif %}
+            {% if comment.file %}
+                <a href="{{ comment.file.url }}" class="btn btn-secondary mt-2">Download File</a>
+            {% endif %}
             <div class="text-muted">{{ comment.created_at }}</div>
+            {% if request.user == comment.user %}
+            <div class="d-flex justify-content-end mt-2">
+                <a href="{% url 'comment_edit' comment.pk %}" class="btn btn-outline-primary btn-sm mr-2">Sửa</a>
+                <a href="{% url 'comment_delete' comment.pk %}" class="btn btn-outline-danger btn-sm">Xóa</a>
+            </div>
+            {% endif %}
             <!-- Nút phản hồi -->
             <button class="btn btn-link" onclick="document.getElementById('replyForm-{{ comment.id }}').classList.toggle('d-none')">Phản hồi</button>
             <!-- Form phản hồi -->
@@ -35,13 +55,25 @@
             {% for reply in comment.replies.all %}
             <div class="list-group-item ml-4">
                 <strong>{{ reply.user.username }}</strong>: {{ reply.content }}
+                {% if reply.image %}
+                    <img src="{{ reply.image.url }}" alt="Reply Image" class="img-fluid mt-2">
+                {% endif %}
+                {% if reply.file %}
+                    <a href="{{ reply.file.url }}" class="btn btn-secondary mt-2">Download File</a>
+                {% endif %}
                 <div class="text-muted">{{ reply.created_at }}</div>
+                {% if request.user == reply.user %}
+                <div class="d-flex justify-content-end mt-2">
+                    <a href="{% url 'comment_edit' reply.pk %}" class="btn btn-outline-primary btn-sm mr-2">Sửa</a>
+                    <a href="{% url 'comment_delete' reply.pk %}" class="btn btn-outline-danger btn-sm">Xóa</a>
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
         {% endfor %}
     </div>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="btn btn-success">Bình luận</button>

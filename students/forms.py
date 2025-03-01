@@ -46,12 +46,12 @@ class DocumentForm(forms.ModelForm):
 class ForumForm(forms.ModelForm):
     class Meta:
         model = Forum
-        fields = ['title', 'description', 'course']
+        fields = ['title', 'description', 'image', 'file', 'course']
 
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['content', 'parent']
+        fields = ['content','image', 'file', 'parent']
         widgets = {
             'parent': forms.HiddenInput()
         }

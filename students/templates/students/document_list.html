@@ -4,7 +4,9 @@
     <div class="row mb-4">
         <div class="col text-center">
             <h2 class="mb-3">Danh sách tài liệu</h2>
+            {% if user.is_superuser %}
             <a href="{% url 'document_create' %}" class="btn btn-primary">Tải lên tài liệu mới</a>
+            {% endif %}
         </div>
     </div>
     <div class="row">
