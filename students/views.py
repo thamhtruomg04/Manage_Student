@@ -156,7 +156,6 @@ def course_delete(request, pk):
     return render(request, 'students/course_confirm_delete.html', {'course': course})
 
 # Course registration view
-@login_required
 def course_register(request, pk):
     course = get_object_or_404(Course, pk=pk)
     user = request.user
@@ -170,15 +169,22 @@ def course_register(request, pk):
         )
 
     if request.method == 'POST':
-        enrollment, created = Enrollment.objects.get_or_create(student=student, course=course)
-        if created:
-            messages.success(request, 'Đăng ký thành công!')
+        # Kiểm tra thanh toán
+        payment_amount = request.POST.get('payment_amount')
+        if payment_amount and float(payment_amount) >= course.fee:
+            enrollment, created = Enrollment.objects.get_or_create(student=student, course=course)
+            if created:
+                # Cập nhật phí đã đóng
+                enrollment.fee_paid = float(payment_amount)
+                enrollment.save()
+                messages.success(request, 'Đăng ký thành công!')
+            else:
+                messages.info(request, 'Bạn đã đăng ký khóa học này rồi.')
+            return redirect('course_list')
         else:
-            messages.info(request, 'Bạn đã đăng ký khóa học này rồi.')
-        return redirect('course_list')
+            messages.error(request, 'Thanh toán không thành công. Vui lòng kiểm tra lại số tiền.')
 
     return render(request, 'students/course_register.html', {'course': course, 'username': user.username})
-
 # Enrollment list view
 @login_required
 def enrollment_list(request, pk):
@@ -343,7 +349,6 @@ def forum_delete(request, pk):
     return render(request, 'students/forum_confirm_delete.html', {'forum': forum})
 
 
-# Chatbot
-# students/views.py
+
 
 

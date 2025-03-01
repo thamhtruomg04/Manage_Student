@@ -17,6 +17,8 @@
                 <th>Ngày bắt đầu</th>
                 <th>Ngày kết thúc</th>
                 <th>Tín chỉ</th>
+                <th>Giảng viên</th>
+                <th>Phí</th>
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -29,6 +31,8 @@
                     <td>{{ course.start_date }}</td>
                     <td>{{ course.end_date }}</td>
                     <td>{{ course.credits }}</td>
+                    <td>{{course.instructor}}</td>
+                    <td>{{ course.fee }}</td>
                     <td>
                         {% if user.is_superuser %}
                             <a href="{% url 'course_edit' course.pk %}" class="btn btn-edit">Sửa</a>

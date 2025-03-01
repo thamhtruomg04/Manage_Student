@@ -20,7 +20,9 @@ class Course(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     credits = models.IntegerField()  # Số tín chỉ
-
+    instructor_name = models.CharField(max_length=100)  # Tên giảng viên
+    fee = models.DecimalField(max_digits=10, decimal_places=2)  # Học phí
+    
     def __str__(self):
         return self.name
 
@@ -28,6 +30,7 @@ class Enrollment(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     enrollment_date = models.DateField(auto_now_add=True)
+    fee_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     def __str__(self):
         return f"{self.student} - {self.course}"

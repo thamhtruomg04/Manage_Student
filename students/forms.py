@@ -18,7 +18,7 @@ class StudentForm(forms.ModelForm):
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['name', 'description', 'start_date', 'end_date', 'credits']
+        fields = ['name', 'description', 'start_date', 'end_date', 'credits', 'instructor_name', 'fee']
 
 class AttendanceForm(forms.ModelForm):
     class Meta:

@@ -1,5 +1,21 @@
 {
     "Hello": "Hi there! How can I assist you today?",
     "What is the fee for the course?": "The fee for each course is $1000.",
-    "How is the schedule?": "The schedule will be sent to your email after registration."
+    "How is the schedule?": "The schedule will be sent to your email after registration.",
+    "What is the duration of the course?": "Each course lasts for 10 weeks.",
+    "Who are the instructors?": "Our courses are taught by experienced professionals with extensive industry knowledge.",
+    "Are there any prerequisites for this course?": "There are no prerequisites for beginner courses.",
+    "Can I get a refund if I'm not satisfied?": "Yes, you can request a refund within the first 14 days of the course.",
+    "What materials do I need to bring?": "You need to have a personal computer with internet access.",
+    "Is there any hands-on practice?": "Yes, our courses include practical exercises and projects.",
+    "How can I contact support?": "You can reach our support team via email or phone.",
+    "What is the start date of the Python course?": "The Python course starts on May 1, 2025.",
+    "How much does the JavaScript course cost?": "The JavaScript course costs $1200.",
+    "What time are the classes held?": "Classes are held from 6 PM to 9 PM, Monday to Friday.",
+    "Do I get a certificate after completing the course?": "Yes, you will receive a certificate upon successful completion of the course.",
+    "Is there any discount for early registration?": "Yes, there is a 10% discount for early registration.",
+    "What if I miss a class?": "You can access recorded sessions if you miss a class.",
+    "Can I interact with the instructor?": "Yes, you can interact with the instructor during the live sessions.",
+    "What kind of projects will we work on?": "You will work on real-world projects related to the course content.",
+    "Is there any group work involved?": "Yes, there will be group projects to enhance collaborative learning."
 }

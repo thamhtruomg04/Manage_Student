@@ -22,7 +22,12 @@
                     <form method="post">
                         {% csrf_token %}
                         <p>Tên khóa học: {{ course.name }}</p>
-                        <button type="submit" class="btn btn-primary btn-block">Đăng ký</button>
+                        <p>Học phí: {{ course.fee }} VND</p>
+
+                        <label for="payment_amount">Số tiền thanh toán:</label>
+                        <input type="number" id="payment_amount" name="payment_amount" required class="form-control mb-3">
+
+                        <button type="submit" class="btn btn-primary btn-block">Đăng ký và Thanh Toán</button>
                     </form>
                     <a href="{% url 'course_list' %}" class="btn btn-secondary btn-block mt-3">Trở lại danh sách khóa học</a>
                 </div>
