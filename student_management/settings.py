@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'students',
     'chatbot',
+    'rest_framework',
 ]
 
 LOGIN_REDIRECT_URL = '/'

@@ -8,6 +8,6 @@ urlpatterns = [
     path('students/', include('students.urls')),  
     path('accounts/', include('django.contrib.auth.urls')),
     path('api/', include('chatbot.urls')),
-    
+    path('api/students/', include('students.urls')),
 ]
 

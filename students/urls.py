@@ -1,10 +1,23 @@
 # urls.py
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import path
+from django.urls import path, include
 from .views import student_list, student_create, student_edit, student_delete, course_list, course_create, course_edit, course_delete, course_register, enrollment_list, register, login_view, logout_view, home, student_profile, attendance_list, take_attendance, attendance_edit, attendance_delete , document_list, document_create, document_delete, student_report, course_report, attendance_report, reporters, forum_list, forum_detail, forum_create, forum_edit, forum_delete, comment_edit, comment_delete
+from rest_framework.routers import DefaultRouter
+from .api_views import StudentViewSet, CourseViewSet, EnrollmentViewSet, AttendanceViewSet, DocumentViewSet, ForumViewSet, CommentViewSet
+
+router = DefaultRouter()
+router.register(r'students', StudentViewSet)
+router.register(r'courses', CourseViewSet)
+router.register(r'enrollments', EnrollmentViewSet)
+router.register(r'attendance', AttendanceViewSet)
+router.register(r'documents', DocumentViewSet)
+router.register(r'forums', ForumViewSet)
+router.register(r'comments', CommentViewSet)
 
 urlpatterns = [
+    
+    path('api/', include(router.urls)),
     path('', student_list, name='student_list'),
     path('new/', student_create, name='student_create'),
     path('<int:pk>/edit/', student_edit, name='student_edit'),
@@ -38,6 +51,8 @@ urlpatterns = [
     path('forums/<int:pk>/delete/', forum_delete, name='forum_delete'),
     path('comments/<int:pk>edit/', comment_edit, name='comment_edit'),
     path('comments/<int:pk>/delete/', comment_delete, name='comment_delete'),
+    
+
 ]
 
 if settings.DEBUG:
