@@ -1,50 +1,174 @@
 {% extends "students/base.html" %}
+{% load static %}
 
 {% block title %}Danh sách khóa học{% endblock %}
 
 {% block content %}
-<div class="course-list-container">
-    <h2>Danh sách khóa học</h2>
-    {% if user.is_superuser %}
-        <a href="{% url 'course_create' %}" class="btn btn-primary">Thêm khóa học mới</a>
-    {% endif %}
-    <table class="course-table">
-        <thead>
-            <tr>
-                <th>STT</th>
-                <th>Tên khóa học</th>
-                <th>Mô tả</th>
-                <th>Ngày bắt đầu</th>
-                <th>Ngày kết thúc</th>
-                <th>Tín chỉ</th>
-                <th>Giảng viên</th>
-                <th>Phí</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for course in courses %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ course.name }}</td>
-                    <td>{{ course.description }}</td>
-                    <td>{{ course.start_date }}</td>
-                    <td>{{ course.end_date }}</td>
-                    <td>{{ course.credits }}</td>
-                    <td>{{course.instructor}}</td>
-                    <td>{{ course.fee }}</td>
-                    <td>
-                        {% if user.is_superuser %}
-                            <a href="{% url 'course_edit' course.pk %}" class="btn btn-edit">Sửa</a>
-                            <a href="{% url 'course_delete' course.pk %}" class="btn btn-delete">Xóa</a>
-                        {% else %}
-                            <a href="{% url 'course_register' course.pk %}" class="btn btn-register">Đăng ký</a>
-                        {% endif %}
-                        <a href="{% url 'enrollment_list' course.pk %}" class="btn btn-secondary">Danh sách học viên</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">Danh sách khóa học</h2>
+                    {% if user.is_superuser %}
+                    <a href="{% url 'course_create' %}" class="btn btn-light btn-sm">
+                        <i class="fas fa-plus me-1"></i> Thêm khóa học mới
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <!-- Bảng danh sách khóa học -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col">STT</th>
+                                    <th scope="col">Tên khóa học</th>
+                                    <th scope="col">Mô tả</th>
+                                    <th scope="col">Ngày bắt đầu</th>
+                                    <th scope="col">Ngày kết thúc</th>
+                                    <th scope="col">Tín chỉ</th>
+                                    <th scope="col">Giảng viên</th>
+                                    <th scope="col">Phí</th>
+                                    <th scope="col">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for course in courses %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ course.name }}</td>
+                                    <td>{{ course.description|truncatewords:10 }}</td>
+                                    <td>{{ course.start_date }}</td>
+                                    <td>{{ course.end_date }}</td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            {{ course.credits }}
+                                        </span>
+                                    </td>
+                                    <td>{{ course.instructor }}</td>
+                                    <td>
+                                        <span class="badge {% if course.fee > 5000000 %}bg-danger{% else %}bg-success{% endif %}">
+                                            {{ course.fee }} VNĐ
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if user.is_superuser %}
+                                        <a href="{% url 'course_edit' course.pk %}" class="btn btn-outline-primary btn-sm me-1">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </a>
+                                        <a href="{% url 'course_delete' course.pk %}" class="btn btn-outline-danger btn-sm me-1"
+                                           onclick="return confirm('Bạn có chắc chắn muốn xóa khóa học này?');">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </a>
+                                        {% else %}
+                                        <a href="{% url 'course_register' course.pk %}" class="btn btn-outline-success btn-sm me-1">
+                                            <i class="fas fa-check"></i> Đăng ký
+                                        </a>
+                                        {% endif %}
+                                        <a href="{% url 'enrollment_list' course.pk %}" class="btn btn-outline-secondary btn-sm">
+                                            <i class="fas fa-users"></i> Danh sách học viên
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="9" class="text-center text-muted">
+                                        Chưa có khóa học nào.
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- CSS tùy chỉnh cho trang này -->
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #28a745, #1d7a38);
+        border-radius: 15px 15px 0 0;
+    }
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    .table th, .table td {
+        vertical-align: middle;
+        padding: 12px 15px;
+    }
+    .table th {
+        font-weight: 600;
+        color: #333;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+        transition: background-color 0.3s ease;
+    }
+    .badge {
+        font-size: 0.9rem;
+        padding: 5px 10px;
+        border-radius: 12px;
+    }
+    .btn-outline-primary, .btn-outline-danger, .btn-outline-success, .btn-outline-secondary {
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-primary:hover {
+        background-color: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+        border-color: #dc3545;
+    }
+    .btn-outline-success:hover {
+        background-color: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+        border-color: #6c757d;
+    }
+    .btn-light {
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    .btn-light:hover {
+        background-color: #f8f9fa;
+        color: #28a745;
+    }
+    @media (max-width: 768px) {
+        .table-responsive {
+            margin: 0 -15px;
+        }
+        .table th, .table td {
+            font-size: 0.85rem;
+            padding: 10px;
+        }
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 0.8rem;
+        }
+    }
+</style>
 {% endblock %}

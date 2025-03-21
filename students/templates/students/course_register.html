@@ -1,38 +1,146 @@
-{% extends 'students/base.html' %}
+{% extends "students/base.html" %}
+{% load static %}
 
 {% block title %}Đăng ký môn học{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
+    <!-- Thông báo thành công -->
     {% if messages %}
-        <div class="alert alert-success" role="alert">
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-        </div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     {% endif %}
+
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-success text-white d-flex align-items-center">
+                    <i class="fas fa-book-open me-2"></i>
                     <h2 class="mb-0">Đăng ký môn học</h2>
                 </div>
                 <div class="card-body">
-                    <p><strong>Username:</strong> {{ username }}</p>
+                    <!-- Thông tin người dùng và khóa học -->
+                    <div class="mb-4">
+                        <p class="mb-2"><strong>Username:</strong> {{ username }}</p>
+                        <p class="mb-2"><strong>Tên khóa học:</strong> {{ course.name }}</p>
+                        <p class="mb-2"><strong>Học phí:</strong> <span class="text-success">{{ course.fee }} VNĐ</span></p>
+                    </div>
+
+                    <!-- Form đăng ký -->
                     <form method="post">
                         {% csrf_token %}
-                        <p>Tên khóa học: {{ course.name }}</p>
-                        <p>Học phí: {{ course.fee }} VND</p>
+                        <div class="mb-3">
+                            <label for="payment_amount" class="form-label">Số tiền thanh toán:</label>
+                            <input type="number" id="payment_amount" name="payment_amount" class="form-control" 
+                                   placeholder="Nhập số tiền thanh toán (VNĐ)" required min="0" step="1000">
+                        </div>
 
-                        <label for="payment_amount">Số tiền thanh toán:</label>
-                        <input type="number" id="payment_amount" name="payment_amount" required class="form-control mb-3">
-
-                        <button type="submit" class="btn btn-primary btn-block">Đăng ký và Thanh Toán</button>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-1"></i> Đăng ký và Thanh Toán
+                            </button>
+                            <a href="{% url 'course_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Trở lại danh sách khóa học
+                            </a>
+                        </div>
                     </form>
-                    <a href="{% url 'course_list' %}" class="btn btn-secondary btn-block mt-3">Trở lại danh sách khóa học</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- CSS tùy chỉnh cho trang này -->
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #28a745, #1d7a38);
+        border-radius: 15px 15px 0 0;
+        padding: 15px;
+    }
+    .card-body {
+        padding: 30px;
+    }
+    .alert-success {
+        border-radius: 10px;
+        background-color: #d4edda;
+        color: #155724;
+        font-size: 0.95rem;
+        padding: 10px 15px;
+        margin-bottom: 20px;
+    }
+    .alert-success .btn-close {
+        padding: 10px;
+    }
+    .form-label {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    .form-control {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 0.95rem;
+        transition: border-color 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #28a745;
+        outline: none;
+        box-shadow: none;
+    }
+    .text-success {
+        font-weight: 600;
+    }
+    .btn-primary, .btn-outline-secondary {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #28a745, #1d7a38);
+        border: none;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #1d7a38, #28a745);
+    }
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+        border-color: #6c757d;
+    }
+    @media (max-width: 768px) {
+        .col-md-8 {
+            padding: 0 15px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .form-control {
+            font-size: 0.9rem;
+        }
+        .btn-primary, .btn-outline-secondary {
+            padding: 6px 15px;
+            font-size: 0.9rem;
+        }
+        .d-flex {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+</style>
 {% endblock %}

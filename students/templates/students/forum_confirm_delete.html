@@ -1,24 +1,100 @@
-{% extends "students/base.html"%}
+{% extends "students/base.html" %}
+{% load static %}
+
 {% block title %}Xác nhận xóa Diễn đàn{% endblock title %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-danger text-white text-center">
-                    <h4>Xóa Diễn đàn</h4>
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white d-flex align-items-center justify-content-center">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <h4 class="mb-0">Xác nhận xóa Diễn đàn</h4>
                 </div>
                 <div class="card-body text-center">
-                    <p>Bạn có chắc chắn muốn xóa Diễn đàn "{{ forum.title }}" không?</p>
-                    <form method="post">
+                    <p class="lead">
+                        Bạn có chắc chắn muốn xóa Diễn đàn: 
+                        <strong class="text-danger">"{{ forum.title }}"</strong> không?
+                    </p>
+                    <p class="text-muted small">
+                        Hành động này không thể hoàn tác. Vui lòng kiểm tra kỹ trước khi xóa.
+                    </p>
+                    <form method="post" class="mt-4">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Xóa</button>
-                        <a href="{% url 'forum_list' %}" class="btn btn-secondary">Hủy bỏ</a>
+                        <div class="form-group d-flex justify-content-center gap-3">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-1"></i> Xóa
+                            </button>
+                            <a href="{% url 'forum_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Hủy bỏ
+                            </a>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- CSS tùy chỉnh cho trang này -->
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        border-radius: 15px 15px 0 0;
+        padding: 15px;
+    }
+    .card-body {
+        padding: 30px;
+    }
+    .lead {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+    .text-danger {
+        font-weight: 600;
+    }
+    .text-muted {
+        font-size: 0.9rem;
+    }
+    .btn-danger, .btn-outline-secondary {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #c82333;
+    }
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+        border-color: #6c757d;
+    }
+    @media (max-width: 768px) {
+        .col-md-6 {
+            padding: 0 15px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .lead {
+            font-size: 1rem;
+        }
+        .btn-danger, .btn-outline-secondary {
+            padding: 6px 15px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
 {% endblock content %}

@@ -1,22 +1,124 @@
 {% extends "students/base.html" %}
+{% load static %}
+
+{% block title %}Tải lên tài liệu{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-success text-white text-center">
-                    <h4>Tải lên tài liệu</h4>
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white d-flex align-items-center justify-content-center">
+                    <i class="fas fa-upload me-2"></i>
+                    <h4 class="mb-0">Tải lên tài liệu</h4>
                 </div>
                 <div class="card-body">
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-success btn-block">Tải lên</button>
+                        <div class="form-content">
+                            {{ form.as_p }}
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-upload me-1"></i> Tải lên
+                            </button>
+                            <a href="{% url 'document_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Trở lại
+                            </a>
+                        </div>
                     </form>
                 </div>
             </div>
-            <a href="{% url 'document_list' %}" class="btn btn-secondary">Trở lại</a>
         </div>
     </div>
 </div>
+
+<!-- CSS tùy chỉnh cho trang này -->
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #28a745, #1d7a38);
+        border-radius: 15px 15px 0 0;
+        padding: 15px;
+    }
+    .card-body {
+        padding: 30px;
+    }
+    .form-content p {
+        margin-bottom: 20px;
+    }
+    .form-content label {
+        font-weight: 500;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .form-content input,
+    .form-content select,
+    .form-content textarea {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.3s ease;
+    }
+    .form-content input:focus,
+    .form-content select:focus,
+    .form-content textarea:focus {
+        border-color: #28a745;
+        outline: none;
+        box-shadow: none;
+    }
+    .form-content input[type="file"] {
+        padding: 5px;
+    }
+    .btn-success, .btn-outline-secondary {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    .btn-success {
+        background: linear-gradient(135deg, #28a745, #1d7a38);
+        border: none;
+    }
+    .btn-success:hover {
+        background: linear-gradient(135deg, #1d7a38, #28a745);
+    }
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+        border-color: #6c757d;
+    }
+    @media (max-width: 768px) {
+        .col-md-8 {
+            padding: 0 15px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .form-content input,
+        .form-content select,
+        .form-content textarea {
+            font-size: 0.9rem;
+        }
+        .btn-success, .btn-outline-secondary {
+            padding: 6px 15px;
+            font-size: 0.9rem;
+        }
+        .d-flex {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+</style>
 {% endblock %}

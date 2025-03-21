@@ -1,4 +1,3 @@
-<!-- take_attendance.html -->
 {% extends "students/base.html" %}
 
 {% block title %}Điểm danh học viên{% endblock %}
@@ -7,21 +6,53 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+            <div class="card shadow rounded-3">
+                <div class="card-header bg-primary text-white p-4">
                     <h2 class="mb-0">Điểm danh học viên</h2>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form method="post">
                         {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary">Điểm danh</button>
+                        <div class="mb-3">
+                            {{ form.as_p }}
+                        </div>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">Điểm danh</button>
                     </form>
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'attendance_list' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                            Quay lại
+                        </a>
+                    </div>
                 </div>
             </div>
-            <a href="{% url 'attendance_list' %}" class="btn btn-secondary">Quay lại</a>
         </div>
-       
     </div>
 </div>
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    .card-header {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    }
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    .btn-outline-secondary {
+        border-width: 2px;
+    }
+    .form-control {
+        border-radius: 8px;
+    }
+    .form-check-input {
+        border-radius: 4px;
+    }
+</style>
 {% endblock %}
