@@ -23,7 +23,7 @@ class CourseForm(forms.ModelForm):
 class AttendanceForm(forms.ModelForm):
     class Meta:
         model = Attendance
-        fields = ['student', 'course', 'date', 'status', 'score']
+        fields = ['student', 'course', 'date', 'status', 'participation']
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -51,7 +51,8 @@ class ForumForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['content','image', 'file', 'parent']
+        fields = ['forum', 'content', 'parent', 'image', 'file', 'likes', 'user']  # Loại bỏ 'created_at' và 'updated_at'
         widgets = {
-            'parent': forms.HiddenInput()
+            'parent': forms.HiddenInput()  # Giữ parent ở dạng ẩn
         }
+

@@ -1,4 +1,5 @@
 {% extends "students/base.html" %}
+{% load static %}
 
 {% block title %}Điểm danh học viên{% endblock %}
 
@@ -6,53 +7,118 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow rounded-3">
-                <div class="card-header bg-primary text-white p-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="fas fa-check-square me-2"></i>
                     <h2 class="mb-0">Điểm danh học viên</h2>
                 </div>
-                <div class="card-body p-4">
+                <div class="card-body">
                     <form method="post">
                         {% csrf_token %}
-                        <div class="mb-3">
+                        <div class="form-content mb-4">
                             {{ form.as_p }}
                         </div>
-                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">Điểm danh</button>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-1"></i> Điểm danh
+                            </button>
+                            <a href="{% url 'attendance_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Quay lại
+                            </a>
+                        </div>
                     </form>
-                    <div class="mt-4 text-center">
-                        <a href="{% url 'attendance_list' %}" class="btn btn-outline-secondary rounded-pill px-4 py-2">
-                            Quay lại
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- CSS tùy chỉnh cho trang này -->
 <style>
     .card {
         border: none;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
     .card-header {
-        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        background: linear-gradient(135deg, #28a745, #1d7a38);
+        border-radius: 15px 15px 0 0;
+        padding: 15px;
+    }
+    .card-body {
+        padding: 30px;
+    }
+    .form-content p {
+        margin-bottom: 20px;
+    }
+    .form-content label {
+        font-weight: 500;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .form-content input,
+    .form-content select,
+    .form-content textarea {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.3s ease;
+    }
+    .form-content input:focus,
+    .form-content select:focus,
+    .form-content textarea:focus {
+        border-color: #28a745;
+        outline: none;
+        box-shadow: none;
+    }
+    .form-content input[type="file"] {
+        padding: 5px;
+    }
+    .btn-primary, .btn-outline-secondary {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
     }
     .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
+        background: linear-gradient(135deg, #28a745, #1d7a38);
+        border: none;
     }
     .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
+        background: linear-gradient(135deg, #1d7a38, #28a745);
     }
     .btn-outline-secondary {
-        border-width: 2px;
+        color: #6c757d;
+        border-color: #6c757d;
     }
-    .form-control {
-        border-radius: 8px;
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+        border-color: #6c757d;
     }
-    .form-check-input {
-        border-radius: 4px;
+    @media (max-width: 768px) {
+        .col-md-8 {
+            padding: 0 15px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .form-content input,
+        .form-content select,
+        .form-content textarea {
+            font-size: 0.9rem;
+        }
+        .btn-primary, .btn-outline-secondary {
+            padding: 6px 15px;
+            font-size: 0.9rem;
+        }
+        .d-flex {
+            flex-direction: column;
+            gap: 10px;
+        }
     }
 </style>
 {% endblock %}

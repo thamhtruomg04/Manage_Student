@@ -27,7 +27,7 @@
                                     <th scope="col">Khóa học</th>
                                     <th scope="col">Ngày</th>
                                     <th scope="col">Trạng thái</th>
-                                    <th scope="col">Điểm</th>
+                                    <th scope="col">Tham gia</th>
                                     {% if user.is_superuser %}
                                     <th scope="col">Hành động</th>
                                     {% endif %}
@@ -47,7 +47,7 @@
                                             {{ attendance.get_status_display }}
                                         </span>
                                     </td>
-                                    <td>{{ attendance.score }}</td>
+                                    <td>{{ attendance.get_participation_display }}</td>
                                     <td>
                                         {% if user.is_superuser %}
                                         <a href="{% url 'attendance_edit' attendance.pk %}" class="btn btn-outline-primary btn-sm me-1">

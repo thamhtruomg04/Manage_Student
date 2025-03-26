@@ -55,10 +55,15 @@ class Attendance(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     date = models.DateField()
     status = models.CharField(max_length=10, choices=[('Present', 'Có mặt'), ('Absent', 'Vắng mặt')], null=True, blank=True)
-    score = models.FloatField(null=True, blank=True)
+    participation = models.CharField(
+        max_length=20,
+        choices=[('Active', 'Học tích cực'), ('Inactive', 'Không tích cực')],
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
-        return f"{self.student} - {self.course} - {self.date} - {self.status or 'No status'} - {self.score or 'No score'}"
+        return f"{self.student} - {self.course} - {self.date} - {self.status or 'No status'} - {self.participation or 'No participation'}"
 
 class Document(models.Model):
     title = models.CharField(max_length=255)
@@ -86,10 +91,12 @@ class Comment(models.Model):
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='comments')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
-    image = models.ImageField(upload_to='comment_images/', null=True, blank=True)  # Thêm ảnh
-    file = models.FileField(upload_to='comment_files/', null=True, blank=True)  # Thêm file
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='replies')
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+    image = models.ImageField(upload_to='comment_images/', null=True, blank=True)
+    file = models.FileField(upload_to='comment_files/', null=True, blank=True)
+    likes = models.ManyToManyField(User, related_name='liked_comments', blank=True)
 
     def __str__(self):
-        return self.content[:20]
+        return f"Comment by {self.user.username} on {self.forum.title}"

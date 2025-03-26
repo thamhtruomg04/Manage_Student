@@ -23,8 +23,10 @@
                                 <i class="fas fa-comments me-2 text-muted"></i>
                                 {{ forum.title }}
                             </a>
+                            <!-- Chỉ hiển thị dropdown nếu người dùng có quyền -->
+                            {% if request.user == forum.created_by or request.user.is_superuser %}
                             <div class="dropdown">
-                                <button class="btn btn-light btn-sm" type="button" id="dropdownMenuButton-{{ forum.pk }}" onclick="toggleDropdown('dropdownMenu-{{ forum.pk }}')">
+                                <button class="btn btn-light btn-sm" type="button" id="dropdownMenuButton-{{ forum.pk }}" onclick="toggleDropdown('dropdownMenu-{{ forum.pk }}', event)">
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-end" id="dropdownMenu-{{ forum.pk }}">
@@ -36,6 +38,7 @@
                                     </a>
                                 </div>
                             </div>
+                            {% endif %}
                         </div>
                         {% empty %}
                         <div class="list-group-item text-center text-muted">
@@ -66,6 +69,7 @@
         border-bottom: 1px solid #eee;
         padding: 15px 20px;
         transition: background-color 0.3s ease;
+        position: relative;
     }
     .list-group-item:last-child {
         border-bottom: none;
@@ -76,6 +80,7 @@
     .list-group-item a {
         color: #333;
         font-weight: 500;
+        padding-right: 40px;
     }
     .list-group-item a:hover {
         color: #28a745;
@@ -90,9 +95,20 @@
         background-color: #f8f9fa;
         color: #28a745;
     }
+    .dropdown {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
     .dropdown-menu {
         border-radius: 10px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        display: none;
+        min-width: 120px;
+        z-index: 1000;
+    }
+    .dropdown-menu.show {
+        display: block;
     }
     .dropdown-item:hover {
         background-color: #f8f9fa;
@@ -106,35 +122,62 @@
             padding: 0 15px;
         }
         .list-group-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
             padding: 10px 15px;
+            min-height: 60px;
         }
         .btn-sm {
             padding: 4px 10px;
             font-size: 0.8rem;
         }
+        .list-group-item a {
+            padding-right: 40px;
+        }
+        .dropdown {
+            top: 5px;
+            right: 5px;
+        }
     }
 </style>
 
 <!-- JavaScript để toggle dropdown -->
+{% block extra_js %}
 <script>
-    function toggleDropdown(dropdownId) {
-        document.getElementById(dropdownId).classList.toggle("show");
+    function toggleDropdown(dropdownId, event) {
+        event.stopPropagation();
+        const dropdown = document.getElementById(dropdownId);
+        if (dropdown) {
+            console.log("Toggling dropdown:", dropdownId);
+            dropdown.classList.toggle("show");
+        } else {
+            console.error("Dropdown not found:", dropdownId);
+        }
     }
 
-    // Đóng dropdown khi nhấp ra ngoài
-    window.onclick = function(event) {
-        if (!event.target.matches('[id^="dropdownMenuButton"]')) {
-            var dropdowns = document.getElementsByClassName("dropdown-menu");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
+    document.addEventListener('click', function(event) {
+        const dropdowns = document.getElementsByClassName("dropdown-menu");
+        let isDropdownButton = false;
+        let isDropdownMenu = false;
+
+        const target = event.target.closest('button');
+        if (target && target.id && target.id.startsWith('dropdownMenuButton')) {
+            isDropdownButton = true;
+        }
+
+        if (event.target.closest('.dropdown-menu')) {
+            isDropdownMenu = true;
+        }
+
+        if (!isDropdownButton && !isDropdownMenu) {
+            console.log("Closing all dropdowns");
+            for (let i = 0; i < dropdowns.length; i++) {
+                const openDropdown = dropdowns[i];
                 if (openDropdown.classList.contains('show')) {
                     openDropdown.classList.remove('show');
                 }
             }
         }
-    }
+    });
 </script>
+{% endblock extra_js %}
+
 {% endblock content %}

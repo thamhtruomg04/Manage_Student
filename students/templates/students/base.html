@@ -269,86 +269,102 @@
     <script src="{% static 'js/script.js' %}"></script>
     <script>
         // Lấy CSRF token từ cookie
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        const csrftoken = getCookie('csrftoken');
-
-        // Toggle chatbot popup
-        const chatbotToggle = document.getElementById('chatbot-toggle');
-        const chatbotPopup = document.getElementById('chatbot-popup');
-        const chatbotInput = document.getElementById('userMessage');
-        const chatbotSend = document.getElementById('sendButton');
-        const chatbotMessages = document.getElementById('chatbox');
-
-        chatbotToggle.addEventListener('click', () => {
-            chatbotPopup.style.display = chatbotPopup.style.display === 'flex' ? 'none' : 'flex';
-        });
-
-        // Đóng popup khi nhấp ra ngoài
-        document.addEventListener('click', (event) => {
-            if (!chatbotPopup.contains(event.target) && !chatbotToggle.contains(event.target)) {
-                chatbotPopup.style.display = 'none';
-            }
-        });
-
-        // Gửi tin nhắn
-        chatbotSend.addEventListener('click', sendMessage);
-        chatbotInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
-
-        function sendMessage() {
-            const message = chatbotInput.value.trim();
-            if (message) {
-                // Thêm tin nhắn người dùng
-                const userMessage = document.createElement('div');
-                userMessage.className = 'chatbot-message user';
-                userMessage.textContent = message;
-                chatbotMessages.appendChild(userMessage);
-
-                // Gửi câu hỏi đến API
-                fetch('/api/chatbot/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrftoken
-                    },
-                    body: JSON.stringify({ message: message })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    const botMessage = document.createElement('div');
-                    botMessage.className = 'chatbot-message bot';
-                    botMessage.textContent = data.reply;
-                    chatbotMessages.appendChild(botMessage);
-                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Cuộn xuống cuối
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    const botMessage = document.createElement('div');
-                    botMessage.className = 'chatbot-message bot';
-                    botMessage.textContent = 'Xin lỗi, có lỗi xảy ra. Vui lòng thử lại.';
-                    chatbotMessages.appendChild(botMessage);
-                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-                });
-
-                // Xóa input
-                chatbotInput.value = '';
-                chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Cuộn xuống cuối
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+// Toggle chatbot popup
+const chatbotToggle = document.getElementById('chatbot-toggle');
+const chatbotPopup = document.getElementById('chatbot-popup');
+const chatbotInput = document.getElementById('userMessage');
+const chatbotSend = document.getElementById('sendButton');
+const chatbotMessages = document.getElementById('chatbox');
+
+chatbotToggle.addEventListener('click', () => {
+    chatbotPopup.style.display = chatbotPopup.style.display === 'flex' ? 'none' : 'flex';
+});
+
+// Đóng popup khi nhấp ra ngoài
+document.addEventListener('click', (event) => {
+    if (!chatbotPopup.contains(event.target) && !chatbotToggle.contains(event.target)) {
+        chatbotPopup.style.display = 'none';
+    }
+});
+
+// Gửi tin nhắn
+chatbotSend.addEventListener('click', sendMessage);
+chatbotInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
+
+function sendMessage() {
+    const message = chatbotInput.value.trim();
+    if (message) {
+        // Thêm tin nhắn người dùng
+        const userMessage = document.createElement('div');
+        userMessage.className = 'chatbot-message user';
+        userMessage.textContent = message;
+        chatbotMessages.appendChild(userMessage);
+
+        // Thêm loading indicator
+        const loadingMessage = document.createElement('div');
+        loadingMessage.className = 'chatbot-message bot';
+        loadingMessage.textContent = 'Đang xử lý...';
+        chatbotMessages.appendChild(loadingMessage);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Cuộn xuống cuối
+
+        // Gửi câu hỏi đến API
+        fetch("{% url 'chatbot' %}", {  // Sử dụng thẻ template Django để lấy URL động
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Lỗi HTTP! Trạng thái: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Xóa loading indicator
+            loadingMessage.remove();
+            const botMessage = document.createElement('div');
+            botMessage.className = 'chatbot-message bot';
+            botMessage.textContent = data.message; // Sửa từ data.reply thành data.message
+            chatbotMessages.appendChild(botMessage);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Cuộn xuống cuối
+        })
+        .catch(error => {
+            // Xóa loading indicator
+            loadingMessage.remove();
+            console.error('Error:', error);
+            const botMessage = document.createElement('div');
+            botMessage.className = 'chatbot-message bot';
+            botMessage.textContent = 'Xin lỗi, có lỗi xảy ra. Vui lòng thử lại.';
+            chatbotMessages.appendChild(botMessage);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        });
+
+        // Xóa input
+        chatbotInput.value = '';
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight; // Cuộn xuống cuối
+    }
+}
     </script>
 </body>
 </html>
