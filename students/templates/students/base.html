@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,6 +14,101 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- CSS tùy chỉnh -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        /* Giữ nguyên phần CSS của bạn */
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="text-white text-center py-4">
+        <h1 class="fw-bold mb-0">Quản Lý Học Viên</h1>
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg mt-3">
+            <div class="container">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'home' %}">Trang chủ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'students:student_list' %}">Danh sách học viên</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'students:course_list' %}">Danh sách khóa học</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'students:attendance_list' %}">Danh sách điểm danh</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'students:document_list' %}">Danh sách tài liệu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'students:forum_list' %}">Danh sách diễn đàn</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'students:reporters' %}">Báo cáo</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link">Xin chào, {{ user.username }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'students:profile' %}">Hồ sơ cá nhân</a>
+                            </li>
+                            <li class="nav-item">
+                                <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-link nav-link text-decoration-none">Đăng xuất</button>
+                                </form>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}">Đăng nhập</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'register' %}">Đăng ký</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container my-5">
+        <div class="card">
+            <div class="card-body p-4">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Chatbot Icon -->
+    <div class="chatbot-icon" id="chatbot-toggle">
+        <i class="fas fa-robot fa-2x"></i>
+    </div>
+
+    <!-- Chatbot Popup -->
+    <div class="chatbot-popup" id="chatbot-popup">
+        <div class="chatbot-header">Chatbot</div>
+        <div class="chatbot-body" id="chatbox">
+            <div class="chatbot-message bot">Xin chào! Tôi là Grok, được tạo bởi xAI. Hôm nay tôi có thể giúp gì cho bạn?</div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="userMessage" placeholder="Nhập tin nhắn...">
+            <button type="button" id="sendButton">Gửi</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-3 mt-auto">
+        <p class="mb-0">© 2025 Quản Lý Học Viên</p>
+    </footer>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -172,95 +268,6 @@
             }
         }
     </style>
-</head>
-<body>
-    <!-- Header -->
-    <header class="text-white text-center py-4">
-        <h1 class="fw-bold mb-0">Quản Lý Học Viên</h1>
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg mt-3">
-            <div class="container">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'home' %}">Trang chủ</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'student_list' %}">Danh sách học viên</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'course_list' %}">Danh sách khóa học</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'attendance_list' %}">Danh sách điểm danh</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'document_list' %}">Danh sách tài liệu</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'forum_list' %}">Danh sách diễn đàn</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'reporters' %}">Báo cáo</a>
-                        </li>
-                        {% if user.is_authenticated %}
-                            <li class="nav-item">
-                                <a class="nav-link">Xin chào, {{ user.username }}</a>
-                            </li>
-                            <li class="nav-item">
-                                <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-link nav-link text-decoration-none">Đăng xuất</button>
-                                </form>
-                            </li>
-                        {% else %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'login' %}">Đăng nhập</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'register' %}">Đăng ký</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container my-5">
-        <div class="card">
-            <div class="card-body p-4">
-                {% block content %}
-                {% endblock %}
-            </div>
-        </div>
-    </main>
-
-    <!-- Chatbot Icon -->
-    <div class="chatbot-icon" id="chatbot-toggle">
-        <i class="fas fa-robot fa-2x"></i>
-    </div>
-
-    <!-- Chatbot Popup -->
-    <div class="chatbot-popup" id="chatbot-popup">
-        <div class="chatbot-header">Chatbot</div>
-        <div class="chatbot-body" id="chatbox">
-            <div class="chatbot-message bot">Xin chào! Tôi là Grok, được tạo bởi xAI. Hôm nay tôi có thể giúp gì cho bạn?</div>
-        </div>
-        <div class="chatbot-input">
-            <input type="text" id="userMessage" placeholder="Nhập tin nhắn...">
-            <button type="button" id="sendButton">Gửi</button>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="py-3 mt-auto">
-        <p class="mb-0">© 2025 Quản Lý Học Viên</p>
-    </footer>
 
     <!-- Bootstrap 5 JS và Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>

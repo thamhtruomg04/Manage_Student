@@ -1,0 +1,50 @@
+<!-- teachers/templates/teachers/teacher_profile.html -->
+{% extends "students/base.html" %}
+{% load static %}
+
+{% block title %}Hồ sơ giáo viên{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Hồ sơ giáo viên</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if teacher.avatar %}
+                            <img src="{{ teacher.avatar.url }}" alt="Avatar" class="rounded-circle" width="150" height="150">
+                        {% else %}
+                            <img src="/media/avatars/default-avatar.png" alt="Default Avatar" class="rounded-circle" width="150" height="150">
+                        {% endif %}
+                    </div>
+                    <h4>{{ teacher.teacher_name }}</h4>
+                    <p><strong>Email:</strong> {{ teacher.email }}</p>
+                    <p><strong>Số điện thoại:</strong> {{ teacher.phone_number|default:"Chưa cung cấp" }}</p>
+                    <p><strong>Ngày sinh:</strong> {{ teacher.date_of_birth|date:"d/m/Y"|default:"Chưa cung cấp" }}</p>
+                    <p><strong>Khoa:</strong> {{ teacher.department|default:"Chưa cung cấp" }}</p>
+                    <p><strong>Ngày vào làm:</strong> {{ teacher.hire_date|date:"d/m/Y"|default:"Chưa cung cấp" }}</p>
+
+                    <h5 class="mt-4">Khóa học phụ trách</h5>
+                    {% if enrolled_courses %}
+                        <ul class="list-group">
+                            {% for course in enrolled_courses %}
+                                <li class="list-group-item">{{ course.course_name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">Chưa phụ trách khóa học nào.</p>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'teachers:teacher_profile_edit' %}" class="btn btn-outline-primary">Chỉnh sửa hồ sơ</a>
+                        <a href="{% url 'students:course_list' %}" class="btn btn-outline-secondary">Quay lại</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

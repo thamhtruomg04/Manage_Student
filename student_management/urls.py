@@ -12,6 +12,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('api/', include('chatbot.urls')),
     path('api/students/', include('students.urls')),
+    path('api/teachers/', include('teachers.urls')),
     # Thêm route để phục vụ media
     path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
 ]

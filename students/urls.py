@@ -9,10 +9,12 @@ from .views import (
     login_view, logout_view, home, student_profile, attendance_list, take_attendance, attendance_edit,
     attendance_delete, document_list, document_create, document_delete, student_report, course_report,
     attendance_report, reporters, forum_list, forum_detail, forum_create, forum_edit, forum_delete,
-    comment_edit, comment_delete
+    comment_edit, comment_delete, profile, 
 )
 from rest_framework.routers import DefaultRouter
 from .api_views import StudentViewSet, CourseViewSet, EnrollmentViewSet, AttendanceViewSet, DocumentViewSet, ForumViewSet, CommentViewSet
+
+app_name = 'students'
 
 # Định nghĩa router cho API
 router = DefaultRouter()
@@ -83,6 +85,9 @@ urlpatterns = [
 
     # Media serving
     path('media/<path:path>', serve, {'document_root': settings.MEDIA_ROOT}),
+
+    path('profile/', profile, name='profile'),  # Thêm đường dẫn đến trang cá nhân
+    
 ]
 
 # Thêm static và media URLs khi ở chế độ DEBUG

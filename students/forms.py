@@ -56,3 +56,5 @@ class CommentForm(forms.ModelForm):
             'parent': forms.HiddenInput()  # Giữ parent ở dạng ẩn
         }
 
+
+

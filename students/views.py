@@ -6,8 +6,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Count, Avg, Q
-from .models import Student, Course, Enrollment, Attendance, Document, Forum, Comment
-from .forms import StudentForm, CourseForm, UserRegisterForm, AttendanceForm, DocumentForm, ForumForm, CommentForm
+from .models import Student,Course, Enrollment, Attendance, Document, Forum, Comment
+from .forms import StudentForm ,CourseForm, UserRegisterForm, AttendanceForm, DocumentForm, ForumForm, CommentForm
 
 # Check if the user is a superuser
 def is_superuser(user):
@@ -103,8 +103,20 @@ def student_delete(request, pk):
 @login_required
 def course_list(request):
     courses = Course.objects.all()
-    return render(request, 'students/course_list.html', {'courses': courses})
-
+    user = request.user
+    enrolled_courses = set()  # Tập hợp các khóa học mà người dùng đã đăng ký
+    
+    if not user.is_superuser:  # Chỉ kiểm tra nếu không phải superuser
+        try:
+            student = Student.objects.get(user=user)
+            enrolled_courses = set(Enrollment.objects.filter(student=student).values_list('course_id', flat=True))
+        except Student.DoesNotExist:
+            pass  # Nếu không có Student tương ứng, bỏ qua
+    
+    return render(request, 'students/course_list.html', {
+        'courses': courses,
+        'enrolled_courses': enrolled_courses  # Truyền danh sách khóa học đã đăng ký
+    })
 @login_required
 @user_passes_test(is_superuser)
 def course_create(request):
@@ -166,7 +178,10 @@ def course_register(request, pk):
             email=user.email,
         )
 
-    if request.method == 'POST':
+    # Kiểm tra xem học viên đã đăng ký khóa học này chưa
+    is_registered = Enrollment.objects.filter(student=student, course=course).exists()
+
+    if request.method == 'POST' and not is_registered:  # Chỉ xử lý đăng ký nếu chưa đăng ký
         payment_amount = request.POST.get('payment_amount')
         if payment_amount and float(payment_amount) >= course.fee:
             enrollment, created = Enrollment.objects.get_or_create(student=student, course=course)
@@ -174,12 +189,15 @@ def course_register(request, pk):
                 enrollment.fee_paid = float(payment_amount)
                 enrollment.save()
                 messages.success(request, 'Đăng ký thành công!')
-            else:
-                messages.info(request, 'Bạn đã đăng ký khóa học này rồi.')
             return redirect('course_list')
         else:
             messages.error(request, 'Thanh toán không thành công. Vui lòng kiểm tra lại số tiền.')
-    return render(request, 'students/course_register.html', {'course': course, 'username': user.username})
+    
+    return render(request, 'students/course_register.html', {
+        'course': course,
+        'username': user.username,
+        'is_registered': is_registered  # Truyền biến này vào template
+    })
 
 # Enrollment list view
 @login_required
@@ -191,7 +209,49 @@ def enrollment_list(request, pk):
 @login_required
 def student_profile(request, pk):
     student = get_object_or_404(Student, pk=pk)
-    return render(request, 'students/student_profile.html', {'student': student})
+    enrolled_courses = Enrollment.objects.filter(student=student).select_related('course')
+    return render(request, 'students/student_profile.html', {
+        'student': student,
+        'enrolled_courses': enrolled_courses
+    })
+    
+@login_required
+def profile(request):
+    user = request.user
+    student = None
+    enrolled_courses = []
+
+    # Nếu là superuser, không cho phép tạo hồ sơ học sinh
+    if user.is_superuser:
+        return render(request, 'students/no_access.html', {
+            'message': 'Tài khoản giáo viên không thể truy cập hồ sơ học sinh.'
+        })
+
+    # Kiểm tra xem người dùng là Student
+    try:
+        student = Student.objects.get(user=user)
+        enrolled_courses = Enrollment.objects.filter(student=student).select_related('course')
+        return render(request, 'students/student_profile.html', {
+            'student': student,
+            'enrolled_courses': enrolled_courses,
+            'is_superuser': user.is_superuser
+        })
+    except Student.DoesNotExist:
+        if request.method == 'POST':
+            form = StudentForm(request.POST, request.FILES)
+            if form.is_valid():
+                student = form.save(commit=False)
+                student.user = user
+                student.save()
+                messages.success(request, 'Hồ sơ học sinh đã được tạo thành công!')
+                return redirect('students:profile')
+        else:
+            form = StudentForm()
+        return render(request, 'students/profile_create.html', {
+            'form': form,
+            'is_superuser': user.is_superuser
+        })
+# View chỉnh sửa hồ sơ giáo viên (giữ nguyên từ trước)
 
 @login_required
 def attendance_list(request):

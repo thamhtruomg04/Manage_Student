@@ -1,0 +1,31 @@
+<!-- teachers/templates/teachers/teacher_profile_create.html -->
+{% extends "students/base.html" %}
+{% load static %}
+
+{% block title %}Tạo hồ sơ giáo viên{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="fas fa-user-plus me-2"></i>
+                    <h2 class="mb-0">Tạo hồ sơ giáo viên</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Vui lòng điền thông tin để tạo hồ sơ giáo viên.</p>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+                            <a href="{% url 'students:course_list' %}" class="btn btn-outline-secondary">Quay lại</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

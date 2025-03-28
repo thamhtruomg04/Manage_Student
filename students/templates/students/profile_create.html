@@ -1,0 +1,111 @@
+{% extends "students/base.html" %}
+{% load static %}
+
+{% block title %}Tạo hồ sơ cá nhân{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="fas fa-user-plus me-2"></i>
+                    <h2 class="mb-0">Tạo hồ sơ cá nhân</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Vui lòng điền thông tin để tạo hồ sơ cá nhân của bạn.</p>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {% if is_superuser %}
+                            <!-- Form cho giáo viên -->
+                            <div class="mb-3">
+                                <label for="teacher_name" class="form-label">Họ và tên</label>
+                                {{ form.teacher_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone_number" class="form-label">Số điện thoại</label>
+                                {{ form.phone_number }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="date_of_birth" class="form-label">Ngày sinh</label>
+                                {{ form.date_of_birth }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="department" class="form-label">Khoa</label>
+                                {{ form.department }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="hire_date" class="form-label">Ngày vào làm</label>
+                                {{ form.hire_date }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="avatar" class="form-label">Ảnh đại diện</label>
+                                {{ form.avatar }}
+                            </div>
+                        {% else %}
+                            <!-- Form cho học sinh -->
+                            <div class="mb-3">
+                                <label for="student" class="form-label">Họ và tên</label>
+                                {{ form.student }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                {{ form.email }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone_number" class="form-label">Số điện thoại</label>
+                                {{ form.phone_number }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="date_of_birth" class="form-label">Ngày sinh</label>
+                                {{ form.date_of_birth }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Địa chỉ</label>
+                                {{ form.address }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="class_name" class="form-label">Lớp</label>
+                                {{ form.class_name }}
+                            </div>
+                            <div class="mb-3">
+                                <label for="avatar" class="form-label">Ảnh đại diện</label>
+                                {{ form.avatar }}
+                            </div>
+                        {% endif %}
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Lưu thông tin
+                            </button>
+                            <a href="{% url 'students:course_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Trở lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-label {
+        font-weight: 500;
+    }
+    input, select, textarea {
+        border-radius: 10px;
+    }
+    .btn-primary {
+        border-radius: 20px;
+        padding: 8px 20px;
+    }
+    .btn-outline-secondary {
+        border-radius: 20px;
+        padding: 8px 20px;
+    }
+</style>
+{% endblock %}

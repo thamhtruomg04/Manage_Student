@@ -31,30 +31,41 @@
                         <p class="mb-2"><strong>Học phí:</strong> <span class="text-success">{{ course.fee }} VNĐ</span></p>
                     </div>
 
-                    <!-- Form đăng ký -->
-                    <form method="post">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="payment_amount" class="form-label">Số tiền thanh toán:</label>
-                            <input type="number" id="payment_amount" name="payment_amount" class="form-control" 
-                                   placeholder="Nhập số tiền thanh toán (VNĐ)" required min="0" step="1000">
+                    <!-- Form đăng ký hoặc thông báo đã đăng ký -->
+                    {% if is_registered %}
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Bạn đã đăng ký khóa học này.
                         </div>
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-check me-1"></i> Đăng ký và Thanh Toán
-                            </button>
+                        <div class="d-flex justify-content-end">
                             <a href="{% url 'course_list' %}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-1"></i> Trở lại danh sách khóa học
                             </a>
                         </div>
-                    </form>
+                    {% else %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="payment_amount" class="form-label">Số tiền thanh toán:</label>
+                                <input type="number" id="payment_amount" name="payment_amount" class="form-control" 
+                                       placeholder="Nhập số tiền thanh toán (VNĐ)" required min="{{ course.fee }}" step="0.01" value="{{ course.fee }}">
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-check me-1"></i> Đăng ký và Thanh Toán
+                                </button>
+                                <a href="{% url 'course_list' %}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i> Trở lại danh sách khóa học
+                                </a>
+                            </div>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <!-- CSS tùy chỉnh cho trang này -->
 <style>
     .card {

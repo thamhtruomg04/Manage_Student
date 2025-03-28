@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'students',
     'chatbot',
     'rest_framework',
+    'teachers'
 ]
 
 LOGIN_REDIRECT_URL = '/'
