@@ -11,7 +11,7 @@
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h2 class="mb-0">Danh sách học viên</h2>
                     {% if user.is_superuser %}
-                    <a href="{% url 'student_create' %}" class="btn btn-light btn-sm">
+                    <a href="{% url 'students:student_create' %}" class="btn btn-light btn-sm">
                         <i class="fas fa-plus me-1"></i> Thêm học viên mới
                     </a>
                     {% endif %}
@@ -43,16 +43,16 @@
                                     <td>{{ student.phone_number }}</td>
                                     <td>{{ student.address }}</td>
                                     <td>
-                                        <a href="{% url 'student_profile' student.pk %}" class="btn btn-info btn-sm">
+                                        <a href="{% url 'students:student_profile' student.pk %}" class="btn btn-info btn-sm">
                                             <i class="fas fa-eye me-1"></i> Xem hồ sơ
                                         </a>
                                     </td>
                                     {% if user.is_superuser %}
                                     <td>
-                                        <a href="{% url 'student_edit' student.pk %}" class="btn btn-outline-primary btn-sm me-2">
+                                        <a href="{% url 'students:student_edit' student.pk %}" class="btn btn-outline-primary btn-sm me-2">
                                             <i class="fas fa-edit me-1"></i> Sửa
                                         </a>
-                                        <a href="{% url 'student_delete' student.pk %}" class="btn btn-outline-danger btn-sm"
+                                        <a href="{% url 'students:student_delete' student.pk %}" class="btn btn-outline-danger btn-sm"
                                            onclick="return confirm('Bạn có chắc chắn muốn xóa học viên này?');">
                                             <i class="fas fa-trash-alt me-1"></i> Xóa
                                         </a>

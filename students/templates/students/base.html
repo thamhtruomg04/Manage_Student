@@ -52,9 +52,7 @@
                             <a class="nav-link" href="{% url 'students:reporters' %}">Báo cáo</a>
                         </li>
                         {% if user.is_authenticated %}
-                            <li class="nav-item">
-                                <a class="nav-link">Xin chào, {{ user.username }}</a>
-                            </li>
+                            
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'students:profile' %}">Hồ sơ cá nhân</a>
                             </li>

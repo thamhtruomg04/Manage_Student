@@ -10,7 +10,7 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h2 class="mb-0">Danh sách Diễn đàn</h2>
-                    <a href="{% url 'forum_create' %}" class="btn btn-light btn-sm">
+                    <a href="{% url 'students:forum_create' %}" class="btn btn-light btn-sm">
                         <i class="fas fa-plus me-1"></i> Tạo Diễn đàn mới
                     </a>
                 </div>
@@ -19,7 +19,7 @@
                     <div class="list-group">
                         {% for forum in forums %}
                         <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="{% url 'forum_detail' forum.pk %}" class="flex-grow-1 text-decoration-none">
+                            <a href="{% url 'students:forum_detail' forum.pk %}" class="flex-grow-1 text-decoration-none">
                                 <i class="fas fa-comments me-2 text-muted"></i>
                                 {{ forum.title }}
                             </a>
@@ -30,10 +30,10 @@
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-end" id="dropdownMenu-{{ forum.pk }}">
-                                    <a class="dropdown-item" href="{% url 'forum_edit' forum.pk %}">
+                                    <a class="dropdown-item" href="{% url 'students:forum_edit' forum.pk %}">
                                         <i class="fas fa-edit me-1"></i> Sửa
                                     </a>
-                                    <a class="dropdown-item text-danger" href="{% url 'forum_delete' forum.pk %}">
+                                    <a class="dropdown-item text-danger" href="{% url 'students:forum_delete' forum.pk %}">
                                         <i class="fas fa-trash-alt me-1"></i> Xóa
                                     </a>
                                 </div>

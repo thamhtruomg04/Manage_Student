@@ -11,7 +11,7 @@
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h2 class="mb-0">Danh sách tài liệu</h2>
                     {% if user.is_superuser %}
-                    <a href="{% url 'document_create' %}" class="btn btn-light btn-sm">
+                    <a href="{% url 'students:document_create' %}" class="btn btn-light btn-sm">
                         <i class="fas fa-upload me-1"></i> Tải lên tài liệu mới
                     </a>
                     {% endif %}
@@ -30,7 +30,7 @@
                                     <i class="fas fa-download me-1"></i> Tải về
                                 </a>
                                 {% if user.is_superuser %}
-                                <a href="{% url 'document_delete' document.pk %}" class="btn btn-outline-danger btn-sm"
+                                <a href="{% url 'students:document_delete' document.pk %}" class="btn btn-outline-danger btn-sm"
                                    onclick="return confirm('Bạn có chắc chắn muốn xóa tài liệu này?');" title="Xóa tài liệu">
                                     <i class="fas fa-trash-alt me-1"></i> Xóa
                                 </a>

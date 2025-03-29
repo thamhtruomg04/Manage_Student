@@ -15,15 +15,15 @@
                 <div class="card-body">
                     <!-- Danh sách báo cáo -->
                     <div class="list-group">
-                        <a href="{% url 'student_report' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <a href="{% url 'students:student_report' %}" class="list-group-item list-group-item-action d-flex align-items-center">
                             <i class="fas fa-users me-3 text-primary"></i>
                             Báo cáo học viên
                         </a>
-                        <a href="{% url 'attendance_report' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <a href="{% url 'students:attendance_report' %}" class="list-group-item list-group-item-action d-flex align-items-center">
                             <i class="fas fa-check-square me-3 text-primary"></i>
                             Báo cáo điểm danh
                         </a>
-                        <a href="{% url 'course_report' %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <a href="{% url 'students:course_report' %}" class="list-group-item list-group-item-action d-flex align-items-center">
                             <i class="fas fa-book me-3 text-primary"></i>
                             Báo cáo khóa học
                         </a>
