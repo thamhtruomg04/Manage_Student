@@ -21,7 +21,7 @@ def register(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Tài khoản cho {username} đã được tạo!')
-            return redirect('login')
+            return redirect('students:login')
     else:
         form = UserRegisterForm()
     return render(request, 'students/register.html', {'form': form})
@@ -34,7 +34,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('students:home')
         else:
             messages.error(request, 'Tên đăng nhập hoặc mật khẩu không đúng')
     return render(request, 'students/login.html')
@@ -70,7 +70,7 @@ def student_create(request):
             student.user = user
             student.save()
             messages.success(request, 'Học viên đã được tạo thành công!')
-            return redirect('student_list')
+            return redirect('students:student_list')
     else:
         form = StudentForm()
     return render(request, 'students/student_form.html', {'form': form})
@@ -84,7 +84,7 @@ def student_edit(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Học viên đã được cập nhật thành công!')
-            return redirect('student_list')
+            return redirect('students:student_list')
     else:
         form = StudentForm(instance=student)
     return render(request, 'students/student_form.html', {'form': form, 'edit': True})
@@ -96,7 +96,7 @@ def student_delete(request, pk):
     if request.method == 'POST':
         student.delete()
         messages.success(request, 'Học viên đã được xóa thành công!')
-        return redirect('student_list')
+        return redirect('students:student_list')
     return render(request, 'students/student_confirm_delete.html', {'student': student})
 
 # Course list view
@@ -129,7 +129,7 @@ def course_create(request):
                 student = Student.objects.get(pk=student_id)
                 Enrollment.objects.create(student=student, course=course)
             messages.success(request, 'Khóa học đã được tạo thành công!')
-            return redirect('course_list')
+            return redirect('students:course_list')
     else:
         form = CourseForm()
     students = Student.objects.all()
@@ -148,7 +148,7 @@ def course_edit(request, pk):
                 student = Student.objects.get(pk=student_id)
                 enrollment, created = Enrollment.objects.get_or_create(student=student, course=course)
             messages.success(request, 'Khóa học đã được cập nhật thành công!')
-            return redirect('course_list')
+            return redirect('students:course_list')
     else:
         form = CourseForm(instance=course)
     students = Student.objects.all()
@@ -161,7 +161,7 @@ def course_delete(request, pk):
     if request.method == 'POST':
         course.delete()
         messages.success(request, 'Khóa học đã được xóa thành công!')
-        return redirect('course_list')
+        return redirect('students:course_list')
     return render(request, 'students/course_confirm_delete.html', {'course': course})
 
 # Course registration view
@@ -189,7 +189,7 @@ def course_register(request, pk):
                 enrollment.fee_paid = float(payment_amount)
                 enrollment.save()
                 messages.success(request, 'Đăng ký thành công!')
-            return redirect('course_list')
+            return redirect('students:course_list')
         else:
             messages.error(request, 'Thanh toán không thành công. Vui lòng kiểm tra lại số tiền.')
     
@@ -266,7 +266,7 @@ def take_attendance(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Điểm danh thành công!')
-            return redirect('attendance_list')
+            return redirect('students:attendance_list')
     else:
         form = AttendanceForm()
     return render(request, 'students/take_attendance.html', {'form': form})
@@ -280,7 +280,7 @@ def attendance_edit(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Điểm danh đã được cập nhật thành công!')
-            return redirect('attendance_list')
+            return redirect('students:attendance_list')
     else:
         form = AttendanceForm(instance=attendance)
     return render(request, 'students/take_attendance.html', {'form': form, 'edit': True})
@@ -310,7 +310,7 @@ def document_create(request):
             document.uploaded_by = request.user
             document.save()
             messages.success(request, 'Tài liệu đã được tải lên thành công!')
-            return redirect('document_list')
+            return redirect('students:document_list')
     else:
         form = DocumentForm()
     return render(request, 'students/document_form.html', {'form': form})
@@ -368,7 +368,7 @@ def forum_create(request):
             forum.created_by = request.user
             forum.save()
             messages.success(request, 'Diễn đàn đã được tạo thành công!')
-            return redirect('forum_list')
+            return redirect('students:forum_list')
     else:
         form = ForumForm()
     return render(request, 'students/forum_form.html', {'form': form})
@@ -378,13 +378,13 @@ def forum_edit(request, pk):
     forum = get_object_or_404(Forum, pk=pk)
     if request.user != forum.created_by and not request.user.is_superuser:
         messages.error(request, 'Bạn không có quyền chỉnh sửa diễn đàn này.')
-        return redirect('forum_list')
+        return redirect('students:forum_list')
     if request.method == 'POST':
         form = ForumForm(request.POST, request.FILES, instance=forum)
         if form.is_valid():
             form.save()
             messages.success(request, 'Diễn đàn đã được cập nhật thành công!')
-            return redirect('forum_list')
+            return redirect('students:forum_list')
     else:
         form = ForumForm(instance=forum)
     return render(request, 'students/forum_form.html', {'form': form, 'edit': True})
@@ -394,41 +394,47 @@ def forum_delete(request, pk):
     forum = get_object_or_404(Forum, pk=pk)
     if request.user != forum.created_by and not request.user.is_superuser:
         messages.error(request, 'Bạn không có quyền xóa diễn đàn này.')
-        return redirect('forum_list')
+        return redirect('students:forum_list')
     if request.method == 'POST':
         forum.delete()
         messages.success(request, 'Diễn đàn đã được xóa thành công!')
-        return redirect('forum_list')
+        return redirect('students:forum_list')
     return render(request, 'students/forum_confirm_delete.html', {'forum': forum})
 @login_required
 def comment_edit(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     if request.user != comment.user and not request.user.is_superuser:
         messages.error(request, 'Bạn không có quyền chỉnh sửa bình luận này.')
-        return redirect('forum_detail', pk=comment.forum.pk)
+        return redirect('students:forum_detail', pk=comment.forum.pk)
     if request.method == 'POST':
         form = CommentForm(request.POST, request.FILES, instance=comment)
         if form.is_valid():
             form.save()
             messages.success(request, 'Bình luận đã được cập nhật thành công!')
-            return redirect('forum_detail', pk=comment.forum.pk)
+            return redirect('students:forum_detail', pk=comment.forum.pk)
     else:
         form = CommentForm(instance=comment)
     return render(request, 'students/comment_form.html', {'form': form})
 
 @login_required
 def comment_delete(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
+    try:
+        comment = Comment.objects.get(pk=pk)
+    except Comment.DoesNotExist:
+        messages.error(request, 'Bình luận không tồn tại hoặc đã bị xóa.')
+        return redirect('students:forum_list')  # Redirect về danh sách diễn đàn nếu bình luận không tồn tại
+
     if request.user != comment.user and not request.user.is_superuser:
         messages.error(request, 'Bạn không có quyền xóa bình luận này.')
-        return redirect('forum_detail', pk=comment.forum.pk)
+        return redirect('students:forum_detail', pk=comment.forum.pk)
+
     if request.method == 'POST':
         forum_pk = comment.forum.pk
         comment.delete()
         messages.success(request, 'Bình luận đã được xóa thành công!')
-        return redirect('forum_detail', pk=forum_pk)
-    return render(request, 'students/comment_confirm_delete.html', {'comment': comment})
+        return redirect('students:forum_detail', pk=forum_pk)
 
+    return render(request, 'students/comment_confirm_delete.html', {'comment': comment})
 @login_required
 def like_forum(request, pk):
     forum = get_object_or_404(Forum, pk=pk)

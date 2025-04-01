@@ -14,10 +14,10 @@
                     <i class="fas fa-ellipsis-v"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end" id="dropdownMenu">
-                    <a class="dropdown-item" href="{% url 'forum_edit' forum.pk %}">
+                    <a class="dropdown-item" href="{% url 'students:forum_edit' forum.pk %}">
                         <i class="fas fa-edit me-1"></i> Sửa
                     </a>
-                    <a class="dropdown-item text-danger" href="{% url 'forum_delete' forum.pk %}">
+                    <a class="dropdown-item text-danger" href="{% url 'students:forum_delete' forum.pk %}">
                         <i class="fas fa-trash-alt me-1"></i> Xóa
                     </a>
                 </div>
@@ -87,17 +87,17 @@
                             {% endif %}
                             {% if request.user == comment.user %}
                             <div class="d-flex justify-content-end mt-2">
-                                <a href="{% url 'comment_edit' comment.pk %}" class="btn btn-outline-primary btn-sm me-2 comment-edit" data-id="{{ comment.id }}">
+                                <a href="{% url 'students:comment_edit' comment.pk %}" class="btn btn-outline-primary btn-sm me-2 comment-edit" data-id="{{ comment.id }}">
                                     <i class="fas fa-edit me-1"></i> Sửa
                                 </a>
-                                <a href="{% url 'comment_delete' comment.pk %}" class="btn btn-outline-danger btn-sm comment-delete" data-id="{{ comment.id }}">
+                                <a href="{% url 'students:comment_delete' comment.pk %}" class="btn btn-outline-danger btn-sm comment-delete" data-id="{{ comment.id }}">
                                     <i class="fas fa-trash-alt me-1"></i> Xóa
                                 </a>
                             </div>
                             {% endif %}
                             <!-- Form phản hồi (ẩn ban đầu) -->
                             <div class="reply-form d-none mt-2">
-                                <form method="post" action="{% url 'create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100">
+                                <form method="post" action="{% url 'students:create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100">
                                     {% csrf_token %}
                                     <input type="hidden" name="parent" value="{{ comment.id }}">
                                     <div class="d-flex align-items-center flex-grow-1">
@@ -157,17 +157,17 @@
                                         {% endif %}
                                         {% if request.user == reply.user %}
                                         <div class="d-flex justify-content-end mt-2">
-                                            <a href="{% url 'comment_edit' reply.pk %}" class="btn btn-outline-primary btn-sm me-2 comment-edit" data-id="{{ reply.id }}">
+                                            <a href="{% url 'students:comment_edit' reply.pk %}" class="btn btn-outline-primary btn-sm me-2 comment-edit" data-id="{{ reply.id }}">
                                                 <i class="fas fa-edit me-1"></i> Sửa
                                             </a>
-                                            <a href="{% url 'comment_delete' reply.pk %}" class="btn btn-outline-danger btn-sm comment-delete" data-id="{{ reply.id }}">
+                                            <a href="{% url 'students:comment_delete' reply.pk %}" class="btn btn-outline-danger btn-sm comment-delete" data-id="{{ reply.id }}">
                                                 <i class="fas fa-trash-alt me-1"></i> Xóa
                                             </a>
                                         </div>
                                         {% endif %}
                                         <!-- Form phản hồi cho phản hồi (ẩn ban đầu) -->
                                         <div class="reply-form d-none mt-2">
-                                            <form method="post" action="{% url 'create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100">
+                                            <form method="post" action="{% url 'students:create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100">
                                                 {% csrf_token %}
                                                 <input type="hidden" name="parent" value="{{ reply.id }}">
                                                 <div class="d-flex align-items-center flex-grow-1">
@@ -208,7 +208,7 @@
 
                 <!-- Thanh nhập bình luận (cố định ở dưới cùng) -->
                 <div class="comment-input-bar d-flex align-items-center p-2" style="position: sticky; bottom: 0; background-color: #fff; border-top: 1px solid #ddd;">
-                    <form method="post" action="{% url 'create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100 comment-form">
+                    <form method="post" action="{% url 'students:create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100 comment-form">
                         {% csrf_token %}
                         <div class="d-flex align-items-center flex-grow-1">
                             <button type="button" class="btn btn-link text-muted me-2">
@@ -236,7 +236,7 @@
 
             <!-- Nút Trở lại -->
             <div class="mt-4">
-                <a href="{% url 'forum_list' %}" class="btn btn-outline-secondary">
+                <a href="{% url 'students:forum_list' %}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left me-1"></i> Trở lại danh sách diễn đàn
                 </a>
             </div>
@@ -517,7 +517,7 @@
                         </div>
                     ` : ''}
                     <div class="reply-form d-none mt-2">
-                        <form method="post" action="{% url 'create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100">
+                        <form method="post" action="{% url 'students:create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100">
                             {% csrf_token %}
                             <input type="hidden" name="parent" value="${data.id}">
                             <div class="d-flex align-items-center flex-grow-1">
@@ -617,7 +617,7 @@
                             </div>
                         ` : ''}
                         <div class="reply-form d-none mt-2">
-                            <form method="post" action="{% url 'create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100">
+                            <form method="post" action="{% url 'students:create_comment' forum.pk %}" enctype="multipart/form-data" class="d-flex w-100">
                                 {% csrf_token %}
                                 <input type="hidden" name="parent" value="${data.id}">
                                 <div class="d-flex align-items-center flex-grow-1">

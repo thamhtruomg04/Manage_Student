@@ -10,9 +10,11 @@
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <h2 class="mb-0">Danh sách Diễn đàn</h2>
-                    <a href="{% url 'students:forum_create' %}" class="btn btn-light btn-sm">
-                        <i class="fas fa-plus me-1"></i> Tạo Diễn đàn mới
-                    </a>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'students:forum_create' %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-plus me-1"></i> Tạo Diễn đàn mới
+                        </a>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     <!-- Danh sách diễn đàn -->
