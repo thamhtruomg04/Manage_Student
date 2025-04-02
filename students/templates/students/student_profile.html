@@ -60,7 +60,16 @@
                         <div class="list-group-item d-flex align-items-center">
                             <i class="fas fa-chalkboard me-3 text-primary"></i>
                             <div>
-                                <strong>Lớp:</strong> {{ student.class_name|default:"Chưa cập nhật" }}
+                                <strong>Lớp:</strong>
+                                {% if enrolled_courses %}
+                                    <ul>
+                                    {% for enrollment in enrolled_courses %}
+                                        <li><a href="{% url 'students:course_detail' pk=enrollment.course.pk %}">{{ enrollment.course.name }}</a></li>
+                                    {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    Chưa đăng ký khóa học nào
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -113,6 +122,15 @@
         background-color: #6c757d;
         color: white;
         border-color: #6c757d;
+    }
+    /* Bỏ gạch chân cho liên kết trong danh sách khóa học */
+    .list-group-item ul li a {
+        text-decoration: none; /* Bỏ gạch chân */
+        color: #007bff; /* Màu liên kết */
+        transition: color 0.3s ease;
+    }
+    .list-group-item ul li a:hover {
+        color: #0056b3; /* Màu khi hover */
     }
     @media (max-width: 768px) {
         .col-md-8 {

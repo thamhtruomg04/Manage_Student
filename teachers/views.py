@@ -30,10 +30,11 @@ def teacher_profile(request):
     user = request.user
     try:
         teacher = Teacher.objects.get(user=user)
-        enrolled_courses = Course.objects.filter(instructor_name=teacher.teacher_name)
+        # Lấy danh sách các khóa học mà teacher phụ trách (giữ dưới dạng QuerySet)
+        enrolled_courses = Course.objects.filter(instructor=teacher)
         return render(request, 'teachers/teacher_profile.html', {
             'teacher': teacher,
-            'enrolled_courses': enrolled_courses,
+            'enrolled_courses': enrolled_courses,  # Truyền QuerySet
             'is_superuser': user.is_superuser
         })
     except Teacher.DoesNotExist:

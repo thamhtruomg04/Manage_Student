@@ -18,8 +18,11 @@ class StudentForm(forms.ModelForm):
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['name', 'description', 'start_date', 'end_date', 'credits', 'instructor_name', 'fee']
-
+        fields = ['name', 'description', 'start_date', 'end_date', 'credits', 'instructor', 'fee']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+        }
 class AttendanceForm(forms.ModelForm):
     class Meta:
         model = Attendance

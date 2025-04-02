@@ -1,5 +1,7 @@
+# students/models.py
 from django.db import models
 from django.contrib.auth.models import User
+from teachers.models import Teacher  # Import model Teacher từ ứng dụng teachers
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -14,15 +16,13 @@ class Student(models.Model):
     def __str__(self):
         return self.student
 
-
-
 class Course(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     start_date = models.DateField()
     end_date = models.DateField()
     credits = models.IntegerField()
-    instructor_name = models.CharField(max_length=100)
+    instructor = models.ForeignKey(Teacher, on_delete=models.SET_NULL, null=True, blank=True)  # Thay instructor_name thành ForeignKey
     fee = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self):
@@ -65,8 +65,8 @@ class Document(models.Model):
 class Forum(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    image = models.ImageField(upload_to='forum_images/', null=True, blank=True)  # Thêm ảnh
-    file = models.FileField(upload_to='forum_files/', null=True, blank=True)  # Thêm file
+    image = models.ImageField(upload_to='forum_images/', null=True, blank=True)
+    file = models.FileField(upload_to='forum_files/', null=True, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,0 +1,136 @@
+{% extends "students/base.html" %}
+{% load static %}
+
+{% block title %}Chi tiết khóa học: {{ course.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white d-flex align-items-center">
+                    <i class="fas fa-chalkboard-teacher me-2"></i>
+                    <h2 class="mb-0">Khóa học: {{ course.name }}</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Thông tin chi tiết khóa học -->
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-book me-3 text-success"></i>
+                            <div>
+                                <strong>Tên khóa học:</strong> {{ course.name }}
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-align-left me-3 text-success"></i>
+                            <div>
+                                <strong>Mô tả:</strong> {{ course.description|default:"Không có mô tả" }}
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-calendar-day me-3 text-success"></i>
+                            <div>
+                                <strong>Ngày bắt đầu:</strong> {{ course.start_date|date:"d/m/Y" }}
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-calendar-check me-3 text-success"></i>
+                            <div>
+                                <strong>Ngày kết thúc:</strong> {{ course.end_date|date:"d/m/Y" }}
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-graduation-cap me-3 text-success"></i>
+                            <div>
+                                <strong>Số tín chỉ:</strong> {{ course.credits }}
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-user-tie me-3 text-success"></i>
+                            <div>
+                                <strong>Giảng viên:</strong> {{ course.instructor.teacher_name|default:"Chưa có giảng viên" }}
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center">
+                            <i class="fas fa-money-bill-wave me-3 text-success"></i>
+                            <div>
+                                <strong>Học phí:</strong> {{ course.fee }} VNĐ
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nút trở lại -->
+                    <div class="mt-4 text-center">
+                        <a href="{% url 'students:course_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Trở lại danh sách khóa học
+                        </a>
+                        <!-- Nút đăng ký khóa học (nếu cần) -->
+                        <a href="{% url 'students:course_register' pk=course.pk %}" class="btn btn-success ms-2">
+                            <i class="fas fa-plus me-1"></i> Đăng ký khóa học
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS tùy chỉnh cho trang này -->
+<style>
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .card-header {
+        background: linear-gradient(135deg, #28a745, #1d7a38);
+        border-radius: 15px 15px 0 0;
+    }
+    .list-group-item {
+        border: none;
+        border-bottom: 1px solid #eee;
+        padding: 15px 20px;
+        transition: background-color 0.3s ease;
+    }
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+    .list-group-item i {
+        font-size: 1.2rem;
+    }
+    .btn-outline-secondary, .btn-success {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+        border-color: #6c757d;
+    }
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1d7a38;
+    }
+    @media (max-width: 768px) {
+        .col-md-10 {
+            padding: 0 15px;
+        }
+        .list-group-item {
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+        .list-group-item i {
+            font-size: 1rem;
+        }
+        .btn-outline-secondary, .btn-success {
+            padding: 6px 15px;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}

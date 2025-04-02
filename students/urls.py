@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.views.static import serve
 from django.urls import path, include
 from .views import (
-    create_comment, like_comment, like_forum, student_list, student_create, student_edit, student_delete,
+    course_detail,create_comment, like_comment, like_forum, student_list, student_create, student_edit, student_delete,
     course_list, course_create, course_edit, course_delete, course_register, enrollment_list, register,
     login_view, logout_view, home, student_profile, attendance_list, take_attendance, attendance_edit,
     attendance_delete, document_list, document_create, document_delete, student_report, course_report,
@@ -46,6 +46,7 @@ urlpatterns = [
     path('courses/<int:pk>/delete/', course_delete, name='course_delete'),
     path('courses/<int:pk>/register/', course_register, name='course_register'),
     path('courses/<int:pk>/enrollments/', enrollment_list, name='enrollment_list'),
+    path('courses/<int:pk>/', course_detail, name='course_detail'),
     path('reports/courses/', course_report, name='course_report'),
 
     # Authentication URLs

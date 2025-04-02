@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models import Count, Avg, Q
 from .models import Student,Course, Enrollment, Attendance, Document, Forum, Comment
 from .forms import StudentForm ,CourseForm, UserRegisterForm, AttendanceForm, DocumentForm, ForumForm, CommentForm
+from teachers.models import Teacher
 
 # Check if the user is a superuser
 def is_superuser(user):
@@ -123,7 +124,14 @@ def course_create(request):
     if request.method == 'POST':
         form = CourseForm(request.POST)
         if form.is_valid():
-            course = form.save()
+            course = form.save(commit=False)  # Lưu tạm thời, chưa commit vào database
+            # Gán giảng viên mặc định (ví dụ: chọn giảng viên đầu tiên)
+            try:
+                default_teacher = Teacher.objects.first()  # Lấy giảng viên đầu tiên
+                course.instructor = default_teacher
+            except Teacher.DoesNotExist:
+                course.instructor = None  # Nếu không có giảng viên, để trống
+            course.save()  # Lưu khóa học vào database
             student_id = request.POST.get('student')
             if student_id:
                 student = Student.objects.get(pk=student_id)
@@ -142,7 +150,15 @@ def course_edit(request, pk):
     if request.method == 'POST':
         form = CourseForm(request.POST, instance=course)
         if form.is_valid():
-            course = form.save()
+            course = form.save(commit=False)  # Lưu tạm thời, chưa commit vào database
+            # Giữ nguyên giảng viên hiện tại (nếu có), hoặc gán mặc định nếu chưa có
+            if not course.instructor:
+                try:
+                    default_teacher = Teacher.objects.first()  # Lấy giảng viên đầu tiên
+                    course.instructor = default_teacher
+                except Teacher.DoesNotExist:
+                    course.instructor = None  # Nếu không có giảng viên, để trống
+            course.save()  # Lưu khóa học vào database
             student_id = request.POST.get('student')
             if student_id:
                 student = Student.objects.get(pk=student_id)
@@ -198,7 +214,11 @@ def course_register(request, pk):
         'username': user.username,
         'is_registered': is_registered  # Truyền biến này vào template
     })
-
+    
+@login_required
+def course_detail(request, pk):
+    course = get_object_or_404(Course, pk=pk)
+    return render(request, 'students/course_detail.html', {'course': course})
 # Enrollment list view
 @login_required
 def enrollment_list(request, pk):
@@ -214,6 +234,7 @@ def student_profile(request, pk):
         'student': student,
         'enrolled_courses': enrolled_courses
     })
+    
     
 @login_required
 def profile(request):

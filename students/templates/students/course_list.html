@@ -46,7 +46,7 @@
                                             {{ course.credits }}
                                         </span>
                                     </td>
-                                    <td>{{ course.instructor }}</td>
+                                    <td>{{ course.instructor.teacher_name|default:"Chưa có giảng viên" }}</td> <!-- Sửa thành course.instructor.teacher_name -->
                                     <td>
                                         <span class="badge {% if course.fee > 5000000 %}bg-danger{% else %}bg-success{% endif %}">
                                             {{ course.fee }} VNĐ
