@@ -4,12 +4,14 @@ from django.conf.urls.static import static
 from django.views.static import serve
 from django.urls import path, include
 from students.views import home
+from django.contrib.auth.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),  
     path('students/', include('students.urls')),  
-    path('accounts/', include('django.contrib.auth.urls')),
+    # path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/login/', LoginView.as_view(template_name='students/login.html'), name='login'),
     path('api/', include('chatbot.urls')),
     path('api/students/', include('students.urls')),
     path('api/teachers/', include('teachers.urls')),

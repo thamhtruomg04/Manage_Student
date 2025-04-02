@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'teachers'
 ]
 
+
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 

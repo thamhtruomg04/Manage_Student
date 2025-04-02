@@ -43,7 +43,7 @@ def login_view(request):
 # Logout view
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('students:login')
 
 # Home view
 @login_required

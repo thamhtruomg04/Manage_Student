@@ -244,7 +244,7 @@
                                 <a class="nav-link" href="{% url 'students:profile' %}">Hồ sơ cá nhân</a>
                             </li>
                             <li class="nav-item">
-                                <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: inline;">
+                                <form id="logout-form" action="{% url 'students:logout' %}" method="post" style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-link nav-link text-decoration-none">Đăng xuất</button>
                                 </form>
