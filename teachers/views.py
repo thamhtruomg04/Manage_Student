@@ -1,5 +1,5 @@
 # teachers/views.py
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from rest_framework import viewsets
@@ -8,6 +8,7 @@ from .models import Teacher
 from .serializers import TeacherSerializer
 from .forms import TeacherProfileForm
 from students.models import Course
+
 
 # Kiểm tra xem user có phải là superuser (giáo viên)
 def is_superuser(user):
@@ -30,11 +31,11 @@ def teacher_profile(request):
     user = request.user
     try:
         teacher = Teacher.objects.get(user=user)
-        # Lấy danh sách các khóa học mà teacher phụ trách (giữ dưới dạng QuerySet)
+        # Lấy danh sách các khóa học mà teacher phụ trách
         enrolled_courses = Course.objects.filter(instructor=teacher)
         return render(request, 'teachers/teacher_profile.html', {
             'teacher': teacher,
-            'enrolled_courses': enrolled_courses,  # Truyền QuerySet
+            'enrolled_courses': enrolled_courses,
             'is_superuser': user.is_superuser
         })
     except Teacher.DoesNotExist:
