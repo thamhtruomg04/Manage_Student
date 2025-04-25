@@ -1,515 +1,311 @@
-# student_management/views.py
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.db.models import Count, Avg, Q
-from .models import Student,Course, Enrollment, Attendance, Document, Forum, Comment
-from .forms import StudentForm ,CourseForm, UserRegisterForm, AttendanceForm, DocumentForm, ForumForm, CommentForm
+from django.db.models import Count, Q
+from rest_framework import viewsets
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
+from rest_framework.authtoken.models import Token
+from .models import Student, Course, Enrollment, Attendance, Document, Forum, Comment
+from .serializers import (
+    StudentSerializer, CourseSerializer, EnrollmentSerializer,
+    AttendanceSerializer, DocumentSerializer, ForumSerializer, CommentSerializer
+)
 from teachers.models import Teacher
 
-# Check if the user is a superuser
-def is_superuser(user):
-    return user.is_superuser
+# API đăng nhập
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_api(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    user = authenticate(request, username=username, password=password)
+    if user:
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'username': user.username,
+            'is_superuser': user.is_superuser
+        })
+    return Response({'error': 'Tên đăng nhập hoặc mật khẩu không đúng'}, status=400)
 
-# Register view
-def register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Tài khoản cho {username} đã được tạo!')
-            return redirect('students:login')
-    else:
-        form = UserRegisterForm()
-    return render(request, 'students/register.html', {'form': form})
-
-# Login view
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('students:home')
-        else:
-            messages.error(request, 'Tên đăng nhập hoặc mật khẩu không đúng')
-    return render(request, 'students/login.html')
-
-# Logout view
-def logout_view(request):
-    logout(request)
-    return redirect('students:login')
-
-# Home view
-@login_required
-def home(request):
-    return render(request, 'students/home.html')
-
-# Student list view
-@login_required
-def student_list(request):
-    students = Student.objects.all()
-    return render(request, 'students/student_list.html', {'students': students})
-
-@login_required
-@user_passes_test(is_superuser)
-def student_create(request):
-    if request.method == 'POST':
-        form = StudentForm(request.POST, request.FILES)
-        if form.is_valid():
-            user = User.objects.create_user(
-                username=form.cleaned_data['email'],
-                email=form.cleaned_data['email'],
-                password='defaultpassword'
-            )
-            student = form.save(commit=False)
-            student.user = user
-            student.save()
-            messages.success(request, 'Học viên đã được tạo thành công!')
-            return redirect('students:student_list')
-    else:
-        form = StudentForm()
-    return render(request, 'students/student_form.html', {'form': form})
-
-@login_required
-@user_passes_test(is_superuser)
-def student_edit(request, pk):
-    student = get_object_or_404(Student, pk=pk)
-    if request.method == 'POST':
-        form = StudentForm(request.POST, request.FILES, instance=student)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Học viên đã được cập nhật thành công!')
-            return redirect('students:student_list')
-    else:
-        form = StudentForm(instance=student)
-    return render(request, 'students/student_form.html', {'form': form, 'edit': True})
-
-@login_required
-@user_passes_test(is_superuser)
-def student_delete(request, pk):
-    student = get_object_or_404(Student, pk=pk)
-    if request.method == 'POST':
-        student.delete()
-        messages.success(request, 'Học viên đã được xóa thành công!')
-        return redirect('students:student_list')
-    return render(request, 'students/student_confirm_delete.html', {'student': student})
-
-# Course list view
-@login_required
-def course_list(request):
-    courses = Course.objects.all()
-    user = request.user
-    enrolled_courses = set()  # Tập hợp các khóa học mà người dùng đã đăng ký
-    
-    if not user.is_superuser:  # Chỉ kiểm tra nếu không phải superuser
-        try:
-            student = Student.objects.get(user=user)
-            enrolled_courses = set(Enrollment.objects.filter(student=student).values_list('course_id', flat=True))
-        except Student.DoesNotExist:
-            pass  # Nếu không có Student tương ứng, bỏ qua
-    
-    return render(request, 'students/course_list.html', {
-        'courses': courses,
-        'enrolled_courses': enrolled_courses  # Truyền danh sách khóa học đã đăng ký
-    })
-@login_required
-@user_passes_test(is_superuser)
-def course_create(request):
-    if request.method == 'POST':
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            course = form.save(commit=False)  # Lưu tạm thời, chưa commit vào database
-            # Gán giảng viên mặc định (ví dụ: chọn giảng viên đầu tiên)
-            try:
-                default_teacher = Teacher.objects.first()  # Lấy giảng viên đầu tiên
-                course.instructor = default_teacher
-            except Teacher.DoesNotExist:
-                course.instructor = None  # Nếu không có giảng viên, để trống
-            course.save()  # Lưu khóa học vào database
-            student_id = request.POST.get('student')
-            if student_id:
-                student = Student.objects.get(pk=student_id)
-                Enrollment.objects.create(student=student, course=course)
-            messages.success(request, 'Khóa học đã được tạo thành công!')
-            return redirect('students:course_list')
-    else:
-        form = CourseForm()
-    students = Student.objects.all()
-    return render(request, 'students/course_form.html', {'form': form, 'students': students})
-
-@login_required
-@user_passes_test(is_superuser)
-def course_edit(request, pk):
-    course = get_object_or_404(Course, pk=pk)
-    if request.method == 'POST':
-        form = CourseForm(request.POST, instance=course)
-        if form.is_valid():
-            course = form.save(commit=False)  # Lưu tạm thời, chưa commit vào database
-            # Giữ nguyên giảng viên hiện tại (nếu có), hoặc gán mặc định nếu chưa có
-            if not course.instructor:
-                try:
-                    default_teacher = Teacher.objects.first()  # Lấy giảng viên đầu tiên
-                    course.instructor = default_teacher
-                except Teacher.DoesNotExist:
-                    course.instructor = None  # Nếu không có giảng viên, để trống
-            course.save()  # Lưu khóa học vào database
-            student_id = request.POST.get('student')
-            if student_id:
-                student = Student.objects.get(pk=student_id)
-                enrollment, created = Enrollment.objects.get_or_create(student=student, course=course)
-            messages.success(request, 'Khóa học đã được cập nhật thành công!')
-            return redirect('students:course_list')
-    else:
-        form = CourseForm(instance=course)
-    students = Student.objects.all()
-    return render(request, 'students/course_form.html', {'form': form, 'students': students, 'edit': True})
-
-@login_required
-@user_passes_test(is_superuser)
-def course_delete(request, pk):
-    course = get_object_or_404(Course, pk=pk)
-    if request.method == 'POST':
-        course.delete()
-        messages.success(request, 'Khóa học đã được xóa thành công!')
-        return redirect('students:course_list')
-    return render(request, 'students/course_confirm_delete.html', {'course': course})
-
-# Course registration view
-@login_required
-def course_register(request, pk):
-    course = get_object_or_404(Course, pk=pk)
-    user = request.user
+# API đăng ký
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_api(request):
     try:
-        student = Student.objects.get(user=user)
-    except Student.DoesNotExist:
-        student = Student.objects.create(
-            user=user,
-            student=user.username,
-            email=user.email,
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        if not all([username, email, password]):
+            return Response({'error': 'Thiếu thông tin bắt buộc'}, status=400)
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
         )
-
-    # Kiểm tra xem học viên đã đăng ký khóa học này chưa
-    is_registered = Enrollment.objects.filter(student=student, course=course).exists()
-
-    if request.method == 'POST' and not is_registered:  # Chỉ xử lý đăng ký nếu chưa đăng ký
-        payment_amount = request.POST.get('payment_amount')
-        if payment_amount and float(payment_amount) >= course.fee:
-            enrollment, created = Enrollment.objects.get_or_create(student=student, course=course)
-            if created:
-                enrollment.fee_paid = float(payment_amount)
-                enrollment.save()
-                messages.success(request, 'Đăng ký thành công!')
-            return redirect('students:course_list')
-        else:
-            messages.error(request, 'Thanh toán không thành công. Vui lòng kiểm tra lại số tiền.')
-    
-    return render(request, 'students/course_register.html', {
-        'course': course,
-        'username': user.username,
-        'is_registered': is_registered  # Truyền biến này vào template
-    })
-    
-@login_required
-def course_detail(request, pk):
-    course = get_object_or_404(Course, pk=pk)
-    return render(request, 'students/course_detail.html', {'course': course})
-# Enrollment list view
-@login_required
-def enrollment_list(request, pk):
-    course = get_object_or_404(Course, pk=pk)
-    enrollments = Enrollment.objects.filter(course=course)
-    return render(request, 'students/enrollment_list.html', {'course': course, 'enrollments': enrollments})
-
-@login_required
-def student_profile(request, pk):
-    student = get_object_or_404(Student, pk=pk)
-    enrolled_courses = Enrollment.objects.filter(student=student).select_related('course')
-    return render(request, 'students/student_profile.html', {
-        'student': student,
-        'enrolled_courses': enrolled_courses
-    })
-    
-    
-@login_required
-def profile(request):
-    user = request.user
-    student = None
-    enrolled_courses = []
-
-    # Nếu là superuser, không cho phép tạo hồ sơ học sinh
-    if user.is_superuser:
-        return render(request, 'students/no_access.html', {
-            'message': 'Tài khoản giáo viên không thể truy cập hồ sơ học sinh.'
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'username': user.username,
+            'is_superuser': user.is_superuser
         })
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
 
-    # Kiểm tra xem người dùng là Student
+# API ViewSets
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            user = User.objects.create_user(
+                username=data['email'],
+                email=data['email'],
+                password='defaultpassword'  # Có thể yêu cầu password từ client
+            )
+            student_data = {**data, 'user': user.id}
+            serializer = self.get_serializer(data=student_data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=400)
+        except Exception as e:
+            return Response({'error': 'Không thể tạo học viên'}, status=400)
+
+class CourseViewSet(viewsets.ModelViewSet):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            course_data = {**data}
+            if not course_data.get('instructor'):
+                default_teacher = Teacher.objects.first()
+                course_data['instructor'] = default_teacher.id if default_teacher else None
+            serializer = self.get_serializer(data=course_data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=400)
+        except Exception as e:
+            return Response({'error': 'Không thể tạo khóa học'}, status=400)
+
+class EnrollmentViewSet(viewsets.ModelViewSet):
+    queryset = Enrollment.objects.all()
+    serializer_class = EnrollmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            try:
+                student = Student.objects.get(user=request.user)
+            except Student.DoesNotExist:
+                return Response({'error': 'Học viên không tồn tại'}, status=400)
+            course = Course.objects.get(id=data['course'])
+            if float(data.get('fee_paid', 0)) < course.fee:
+                return Response({'error': 'Số tiền thanh toán không đủ'}, status=400)
+            enrollment_data = {**data, 'student': student.id}
+            serializer = self.get_serializer(data=enrollment_data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data)
+        except Course.DoesNotExist:
+            return Response({'error': 'Khóa học không tồn tại'}, status=400)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=400)
+        except Exception as e:
+            return Response({'error': 'Không thể đăng ký khóa học'}, status=400)
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=400)
+        except Exception as e:
+            return Response({'error': 'Không thể tạo điểm danh'}, status=400)
+
+class DocumentViewSet(viewsets.ModelViewSet):
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            document_data = {**data, 'uploaded_by': request.user.id}
+            serializer = self.get_serializer(data=document_data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=400)
+        except Exception as e:
+            return Response({'error': 'Không thể tải lên tài liệu'}, status=400)
+
+class ForumViewSet(viewsets.ModelViewSet):
+    queryset = Forum.objects.all()
+    serializer_class = ForumSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            forum_data = {**data, 'created_by': request.user.id}
+            serializer = self.get_serializer(data=forum_data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=400)
+        except Exception as e:
+            return Response({'error': 'Không thể tạo diễn đàn'}, status=400)
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['create']:
+            self.permission_classes = [IsAuthenticated]
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            self.permission_classes = [IsAdminUser]
+        return super().get_permissions()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            comment_data = {**data, 'user': request.user.id}
+            serializer = self.get_serializer(data=comment_data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            return Response(serializer.data)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=400)
+        except Exception as e:
+            return Response({'error': 'Không thể tạo bình luận'}, status=400)
+
+# API-specific views
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_forum(request, pk):
     try:
-        student = Student.objects.get(user=user)
-        enrolled_courses = Enrollment.objects.filter(student=student).select_related('course')
-        return render(request, 'students/student_profile.html', {
-            'student': student,
-            'enrolled_courses': enrolled_courses,
-            'is_superuser': user.is_superuser
-        })
-    except Student.DoesNotExist:
-        if request.method == 'POST':
-            form = StudentForm(request.POST, request.FILES)
-            if form.is_valid():
-                student = form.save(commit=False)
-                student.user = user
-                student.save()
-                messages.success(request, 'Hồ sơ học sinh đã được tạo thành công!')
-                return redirect('students:profile')
+        forum = Forum.objects.get(pk=pk)
+        if request.user in forum.likes.all():
+            forum.likes.remove(request.user)
+            liked = False
         else:
-            form = StudentForm()
-        return render(request, 'students/profile_create.html', {
-            'form': form,
-            'is_superuser': user.is_superuser
-        })
-# View chỉnh sửa hồ sơ giáo viên (giữ nguyên từ trước)
+            forum.likes.add(request.user)
+            liked = True
+        return Response({'like_count': forum.likes.count(), 'liked': liked})
+    except Forum.DoesNotExist:
+        return Response({'error': 'Diễn đàn không tồn tại'}, status=404)
 
-@login_required
-def attendance_list(request):
-    attendances = Attendance.objects.all()
-    return render(request, 'students/attendance_list.html', {'attendances': attendances})
-
-@login_required
-@user_passes_test(is_superuser)
-def take_attendance(request):
-    if request.method == 'POST':
-        form = AttendanceForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Điểm danh thành công!')
-            return redirect('students:attendance_list')
-    else:
-        form = AttendanceForm()
-    return render(request, 'students/take_attendance.html', {'form': form})
-
-@login_required
-@user_passes_test(is_superuser)
-def attendance_edit(request, pk):
-    attendance = get_object_or_404(Attendance, pk=pk)
-    if request.method == 'POST':
-        form = AttendanceForm(request.POST, instance=attendance)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Điểm danh đã được cập nhật thành công!')
-            return redirect('students:attendance_list')
-    else:
-        form = AttendanceForm(instance=attendance)
-    return render(request, 'students/take_attendance.html', {'form': form, 'edit': True})
-
-@login_required
-@user_passes_test(is_superuser)
-def attendance_delete(request, pk):
-    attendance = get_object_or_404(Attendance, pk=pk)
-    if request.method == 'POST':
-        attendance.delete()
-        messages.success(request, 'Điểm danh đã được xóa thành công!')
-        return redirect('attendance_list')
-    return render(request, 'students/attendance_confirm_delete.html', {'attendance': attendance})
-
-@login_required
-def document_list(request):
-    documents = Document.objects.all()
-    return render(request, 'students/document_list.html', {'documents': documents})
-
-@login_required
-@user_passes_test(is_superuser)
-def document_create(request):
-    if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            document = form.save(commit=False)
-            document.uploaded_by = request.user
-            document.save()
-            messages.success(request, 'Tài liệu đã được tải lên thành công!')
-            return redirect('students:document_list')
-    else:
-        form = DocumentForm()
-    return render(request, 'students/document_form.html', {'form': form})
-
-@login_required
-def document_delete(request, pk):
-    document = get_object_or_404(Document, pk=pk)
-    if request.method == 'POST':
-        document.delete()
-        messages.success(request, 'Tài liệu đã được xóa thành công!')
-        return redirect('document_list')
-    return render(request, 'students/document_confirm_delete.html', {'document': document})
-
-@login_required
-def student_report(request):
-    students = Student.objects.all()
-    return render(request, 'students/student_report.html', {'students': students})
-
-@login_required
-def course_report(request):
-    courses = Course.objects.annotate(num_students=Count('enrollment'))
-    return render(request, 'students/course_report.html', {'courses': courses})
-
-@login_required
-def attendance_report(request):
-    attendance_stats = Attendance.objects.values('course__name').annotate(
-        num_attended=Count('status', filter=Q(status=True)),
-        num_missed=Count('status', filter=Q(status=False))
-    )
-    return render(request, 'students/attendance_report.html', {'attendance_stats': attendance_stats})
-
-@login_required
-def reporters(request):
-    return render(request, 'students/reports.html')
-
-# Forum-related views
-@login_required
-def forum_list(request):
-    forums = Forum.objects.all()
-    return render(request, 'students/forum_list.html', {'forums': forums})
-
-@login_required
-def forum_detail(request, pk):
-    forum = get_object_or_404(Forum, pk=pk)
-    comments = forum.comments.filter(parent=None)
-    return render(request, 'students/forum_detail.html', {'forum': forum, 'comments': comments})
-
-@login_required
-@user_passes_test(is_superuser)
-def forum_create(request):
-    if request.method == 'POST':
-        form = ForumForm(request.POST, request.FILES)
-        if form.is_valid():
-            forum = form.save(commit=False)
-            forum.created_by = request.user
-            forum.save()
-            messages.success(request, 'Diễn đàn đã được tạo thành công!')
-            return redirect('students:forum_list')
-    else:
-        form = ForumForm()
-    return render(request, 'students/forum_form.html', {'form': form})
-
-@login_required
-def forum_edit(request, pk):
-    forum = get_object_or_404(Forum, pk=pk)
-    if request.user != forum.created_by and not request.user.is_superuser:
-        messages.error(request, 'Bạn không có quyền chỉnh sửa diễn đàn này.')
-        return redirect('students:forum_list')
-    if request.method == 'POST':
-        form = ForumForm(request.POST, request.FILES, instance=forum)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Diễn đàn đã được cập nhật thành công!')
-            return redirect('students:forum_list')
-    else:
-        form = ForumForm(instance=forum)
-    return render(request, 'students/forum_form.html', {'form': form, 'edit': True})
-
-@login_required
-def forum_delete(request, pk):
-    forum = get_object_or_404(Forum, pk=pk)
-    if request.user != forum.created_by and not request.user.is_superuser:
-        messages.error(request, 'Bạn không có quyền xóa diễn đàn này.')
-        return redirect('students:forum_list')
-    if request.method == 'POST':
-        forum.delete()
-        messages.success(request, 'Diễn đàn đã được xóa thành công!')
-        return redirect('students:forum_list')
-    return render(request, 'students/forum_confirm_delete.html', {'forum': forum})
-@login_required
-def comment_edit(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    if request.user != comment.user and not request.user.is_superuser:
-        messages.error(request, 'Bạn không có quyền chỉnh sửa bình luận này.')
-        return redirect('students:forum_detail', pk=comment.forum.pk)
-    if request.method == 'POST':
-        form = CommentForm(request.POST, request.FILES, instance=comment)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Bình luận đã được cập nhật thành công!')
-            return redirect('students:forum_detail', pk=comment.forum.pk)
-    else:
-        form = CommentForm(instance=comment)
-    return render(request, 'students/comment_form.html', {'form': form})
-
-@login_required
-def comment_delete(request, pk):
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def like_comment(request, pk):
     try:
         comment = Comment.objects.get(pk=pk)
+        if request.user in comment.likes.all():
+            comment.likes.remove(request.user)
+            liked = False
+        else:
+            comment.likes.add(request.user)
+            liked = True
+        return Response({'like_count': comment.likes.count(), 'liked': liked})
     except Comment.DoesNotExist:
-        messages.error(request, 'Bình luận không tồn tại hoặc đã bị xóa.')
-        return redirect('students:forum_list')  # Redirect về danh sách diễn đàn nếu bình luận không tồn tại
+        return Response({'error': 'Bình luận không tồn tại'}, status=404)
 
-    if request.user != comment.user and not request.user.is_superuser:
-        messages.error(request, 'Bạn không có quyền xóa bình luận này.')
-        return redirect('students:forum_detail', pk=comment.forum.pk)
-
-    if request.method == 'POST':
-        forum_pk = comment.forum.pk
-        comment.delete()
-        messages.success(request, 'Bình luận đã được xóa thành công!')
-        return redirect('students:forum_detail', pk=forum_pk)
-
-    return render(request, 'students/comment_confirm_delete.html', {'comment': comment})
-@login_required
-def like_forum(request, pk):
-    forum = get_object_or_404(Forum, pk=pk)
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Phương thức không được hỗ trợ'}, status=405)
-    if request.user in forum.likes.all():
-        forum.likes.remove(request.user)
-        liked = False
-    else:
-        forum.likes.add(request.user)
-        liked = True
-    return JsonResponse({'like_count': forum.likes.count(), 'liked': liked})
-
-@login_required
-def like_comment(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Phương thức không được hỗ trợ'}, status=405)
-    if request.user in comment.likes.all():
-        comment.likes.remove(request.user)
-        liked = False
-    else:
-        comment.likes.add(request.user)
-        liked = True
-    return JsonResponse({'like_count': comment.likes.count(), 'liked': liked})
-
-@login_required
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_comment(request, forum_id):
-    if request.method == "POST":
-        forum = get_object_or_404(Forum, pk=forum_id)
-        content = request.POST.get("content")
-        parent_id = request.POST.get("parent")
-        image = request.FILES.get("image")
-        file = request.FILES.get("file")
+    try:
+        forum = Forum.objects.get(pk=forum_id)
+        data = request.data
+        comment_data = {
+            'forum': forum.id,
+            'user': request.user.id,
+            'content': data.get('content'),
+            'parent': data.get('parent'),
+            'image': data.get('image'),
+            'file': data.get('file')
+        }
+        serializer = CommentSerializer(data=comment_data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    except Forum.DoesNotExist:
+        return Response({'error': 'Diễn đàn không tồn tại'}, status=404)
 
-        if not content:
-            return JsonResponse({"error": "Nội dung không được để trống"}, status=400)
+# API báo cáo
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def student_report_api(request):
+    students = Student.objects.all()
+    serializer = StudentSerializer(students, many=True)
+    return Response(serializer.data)
 
-        comment = Comment.objects.create(
-            forum=forum,
-            user=request.user,
-            content=content,
-            parent_id=parent_id,
-            image=image,
-            file=file
-        )
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def course_report_api(request):
+    courses = Course.objects.annotate(num_students=Count('enrollment'))
+    serializer = CourseSerializer(courses, many=True)
+    return Response(serializer.data)
 
-        return JsonResponse({
-            "id": comment.id,
-            "username": comment.user.username,
-            "content": comment.content,
-            "created_at": comment.created_at.isoformat(),
-            "image": comment.image.url if comment.image else None,
-            "file": comment.file.url if comment.file else None,
-            "user_is_owner": comment.user == request.user
-        })
-    return JsonResponse({"error": "Phương thức không được hỗ trợ"}, status=405)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def attendance_report_api(request):
+    attendance_stats = Attendance.objects.values('course__name').annotate(
+        num_attended=Count('status', filter=Q(status='Present')),
+        num_missed=Count('status', filter=Q(status='Absent'))
+    )
+    return Response(attendance_stats)
