@@ -24,18 +24,13 @@ router.register(r'comments', CommentViewSet)
 # Định nghĩa các URL patterns
 urlpatterns = [
     # API endpoints
-    path('api/', include(router.urls)),
-    path('api/login/', login_api, name='login_api'),
-    path('api/register/', register_api, name='register_api'),
-    path('api/forum/<int:pk>/like/', like_forum, name='like_forum'),
-    path('api/forum/<int:forum_id>/comment/', create_comment, name='create_comment'),
-    path('api/comment/<int:pk>/like/', like_comment, name='like_comment'),
-    path('api/reports/students/', student_report_api, name='student_report_api'),
-    path('api/reports/courses/', course_report_api, name='course_report_api'),
-    path('api/reports/attendance/', attendance_report_api, name='attendance_report_api'),
+    path('v1/', include(router.urls)),
+    path('v1/login/', login_api, name='login_api'),
+    path('v1/register/', register_api, name='register_api'),
+    path('v1/forum/<int:pk>/like/', like_forum, name='like_forum'),
+    path('v1/forum/<int:forum_id>/comment/', create_comment, name='create_comment'),
+    path('v1/comment/<int:pk>/like/', like_comment, name='like_comment'),
+    path('v1/reports/students/', student_report_api, name='student_report_api'),
+    path('v1/reports/courses/', course_report_api, name='course_report_api'),
+    path('v1/reports/attendance/', attendance_report_api, name='attendance_report_api'),
 ]
-
-# Thêm media URLs khi ở chế độ DEBUG
-if settings.DEBUG:
-    print("Serving media at:", settings.MEDIA_URL, "from:", settings.MEDIA_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
