@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
+from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -23,7 +24,8 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),   
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),  
+    path('', TemplateView.as_view(template_name='home.html'), name='home'),
 ]
 if settings.DEBUG:
     print("Serving media at:", settings.MEDIA_URL, "from:", settings.MEDIA_ROOT)
